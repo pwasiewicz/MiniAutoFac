@@ -10,6 +10,7 @@
 namespace MiniAutFac
 {
     using MiniAutFac.Attributes;
+    using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Helpers;
     using MiniAutFac.Interfaces;
@@ -81,7 +82,7 @@ namespace MiniAutFac
         {
             var resolvable = new Container
                                  {
-                                     TypeContainer = new Dictionary<Type, IEnumerable<Type>>(),
+                                     TypeContainer = new Dictionary<Type, RegisteredTypeContext>(),
                                      ResolveImplicit = this.ResolveImplicit
                                  };
 
@@ -97,16 +98,28 @@ namespace MiniAutFac
                 resolvable.ActivationEngine = this.ActivatorEngine;
             }
 
-            foreach (var builderResolvableItem in this.typeContainer.GroupBy(resolvableItem => resolvableItem.AsType))
+            foreach (var builderResolvableItems in this.typeContainer.GroupBy(resolvableItem => resolvableItem.AsType))
             {
-                if (builderResolvableItem.Any(type => type.InType.IsInterface) ||
-                    builderResolvableItem.Any(type => type.InType.IsAbstract))
+                if (builderResolvableItems.Any(type => type.InType.IsInterface) ||
+                    builderResolvableItems.Any(type => type.InType.IsAbstract))
                 {
                     throw new NotAssignableException();
                 }
 
-                var pair = new KeyValuePair<Type, IEnumerable<Type>>(
-                    builderResolvableItem.Key, builderResolvableItem.Select(rslb => rslb.InType).ToList());
+                var ctx = new RegisteredTypeContext(builderResolvableItems.Select(item => item.InType).ToList());
+                if ((from item in builderResolvableItems
+                     where item.Parameters.Any()
+                     from parm in item.Parameters
+                     where !ctx.Parameters[item.InType].Add(parm)
+                     select item).Any())
+                {
+                    throw new InvalidOperationException("Cannot add parameter. The same already registered.");
+                }
+
+
+                var pair = new KeyValuePair<Type, RegisteredTypeContext>(builderResolvableItems.Key, ctx);
+
+
                 resolvable.TypeContainer.Add(pair);
             }
 

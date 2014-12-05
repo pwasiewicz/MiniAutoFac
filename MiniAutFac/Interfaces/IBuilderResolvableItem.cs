@@ -9,6 +9,9 @@
 
 namespace MiniAutFac.Interfaces
 {
+    using System.Collections.Generic;
+    using MiniAutFac.Parameters;
+
     /// <summary>
     /// The BuilderResolvableItem interface.
     /// </summary>

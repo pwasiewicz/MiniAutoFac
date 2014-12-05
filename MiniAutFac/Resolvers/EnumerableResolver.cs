@@ -39,23 +39,15 @@
 
             if (this.Container.ResolveImplicit)
             {
-                foreach (
-                    var outputInstance in
-                        this.Container.SearchImplicitImplementations(hiddenType)
-                            .Select(outputType => this.Container.CreateInstanceRecursive(outputType)).Distinct())
-                {
-                    outputList.Add(outputInstance);
-                }
+                throw new NotSupportedException("Not supported yet.");
             }
-            else
+
+            foreach (
+                var outputInstance in
+                    this.Container.TypeContainer[hiddenType]
+                        .Select(outputType => this.Container.CreateInstanceRecursive(this.Container.TypeContainer[hiddenType], outputType)))
             {
-                foreach (
-                    var outputInstance in
-                        this.Container.TypeContainer[hiddenType]
-                            .Select(outputType => this.Container.CreateInstanceRecursive(outputType)))
-                {
-                    outputList.Add(outputInstance);
-                }
+                outputList.Add(outputInstance);
             }
 
             return outputList;

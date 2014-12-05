@@ -86,10 +86,14 @@
     <Compile Include="Exceptions\TypeRepositoryEmptyException.cs" />
     <Compile Include="Extensions\ContainerExtensions.cs" />
     <Compile Include="Helpers\Graph.cs" />
+    <Compile Include="Context\RegisteredTypeContext.cs" />
     <Compile Include="Interfaces\IBuilderResolvableItem.cs" />
     <Compile Include="Interfaces\IObjectActivatorData.cs" />
     <Compile Include="Interfaces\IResolvable.cs" />
     <Compile Include="ObjectActivatorData.cs" />
+    <Compile Include="ParametersExt.cs" />
+    <Compile Include="Parameters\Concrete\NamedParameter.cs" />
+    <Compile Include="Parameters\Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resolvers\ConcreteResolverBase.cs" />
     <Compile Include="Resolvers\EnumerableResolver.cs" />

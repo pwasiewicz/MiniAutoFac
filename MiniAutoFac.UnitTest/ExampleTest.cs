@@ -9,17 +9,14 @@
 
 namespace MiniAutoFac.UnitTest
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Reflection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-
     using MiniAutFac;
     using MiniAutFac.Exceptions;
-
     using MiniAutoFac.UnitTest.TestClasses;
     using MiniAutoFac.UnitTest.TestClasses.SampleNamespace;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// The example test.
@@ -27,6 +24,22 @@ namespace MiniAutoFac.UnitTest
     [TestClass]
     public class ExampleTest
     {
+
+        [TestMethod]
+        public void ResolvingNamedParameters()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<ParameterClassA>().WithNamedParameter("test", "A").As<ParameterClassA>();
+            builder.Register<ParameterClassB>().WithNamedParameter("test", 2).As<ParameterClassB>();
+
+            var cnt = builder.Build();
+
+            var bInst = cnt.Resolve<ParameterClassB>();
+
+            Assert.AreEqual(bInst.Test, 2);
+            Assert.AreEqual(bInst.ClassA.Test, "A");
+        }
+
         /// <summary>
         /// The registering without "as".
         /// </summary>

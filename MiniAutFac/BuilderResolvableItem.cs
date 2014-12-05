@@ -10,9 +10,10 @@
 namespace MiniAutFac
 {
     using System;
-
+    using System.Collections.Generic;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Parameters;
 
     /// <summary>
     /// The builder resolvable item.
@@ -25,6 +26,8 @@ namespace MiniAutFac
         /// <param name="inType">Type of the input.</param>
         internal BuilderResolvableItem(Type inType)
         {
+            this.Parameters = new List<Parameter>();
+
             this.InType = inType;
             this.AsType = this.InType;
         }
@@ -34,6 +37,11 @@ namespace MiniAutFac
         /// </summary>
         /// <value> The type of the input.  </value>
         internal Type InType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        internal List<Parameter> Parameters { get; set; } 
 
         /// <summary>
         /// Gets or sets the output type.

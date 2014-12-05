@@ -15,7 +15,7 @@ namespace MiniAutFac
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-
+    using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
     using MiniAutFac.Resolvers;
@@ -39,7 +39,7 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the type container.
         /// </summary>
-        internal IDictionary<Type, IEnumerable<Type>> TypeContainer { get; set; }
+        internal IDictionary<Type, RegisteredTypeContext> TypeContainer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether resolve implicit.
@@ -114,10 +114,10 @@ namespace MiniAutFac
                 throw new CannotResolveTypeException();
             }
 
-            return this.CreateInstanceRecursive(outputType);
+            return this.CreateInstanceRecursive(registeredInstancesPair.Value, outputType);
         }
 
-        internal object CreateInstanceRecursive(Type target)
+        internal object CreateInstanceRecursive(RegisteredTypeContext ctx, Type target)
         {
             LinkedList<object> constructorArguments = null;
 
@@ -128,7 +128,7 @@ namespace MiniAutFac
                 foreach (var constructorInfo in constructors)
                 {
                     var parametersInsance = new LinkedList<object>();
-                    if (!this.ResolveConstructorParameters(constructorInfo, parametersInsance))
+                    if (!this.ResolveConstructorParameters(ctx, constructorInfo, parametersInsance))
                     {
                         continue;
                     }
@@ -176,10 +176,11 @@ namespace MiniAutFac
         /// <summary>
         /// Resolves the constructor parameters.
         /// </summary>
-        /// <param name="constructorInfo">The constructor info.</param>
+        /// <param name="ctx"></param>
+        /// <param name="constructorInfo">The constructor ctx.</param>
         /// <param name="arguments">The arguments.</param>
         /// <returns>True, if resolving constructor parameters succeed.</returns>
-        private bool ResolveConstructorParameters(MethodBase constructorInfo, ICollection<object> arguments)
+        private bool ResolveConstructorParameters(RegisteredTypeContext ctx, MethodBase constructorInfo, ICollection<object> arguments)
         {
             if (constructorInfo == null)
             {
@@ -192,12 +193,29 @@ namespace MiniAutFac
             }
 
             arguments.Clear();
-            var argumentTypes = constructorInfo.GetParameters().OrderBy(x => x.Position).Select(x => x.ParameterType);
+
+            var parameters = constructorInfo.GetParameters().OrderBy(x => x.Position);
+            var declaredParameters = ctx.Parameters[constructorInfo.DeclaringType];
 
             try
             {
-                foreach (var parameterInstance in argumentTypes.Select(this.Resolve))
+                foreach (var parameterInfo in parameters)
                 {
+                    var paramterResolved = false;
+                    foreach (
+                        var parameterCtx in declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
+                    {
+                        arguments.Add(parameterCtx.GetValue());
+                        paramterResolved = true;
+                        break;
+                    }
+
+                    if (paramterResolved)
+                    {
+                        continue;
+                    }
+
+                    var parameterInstance = this.Resolve(parameterInfo.ParameterType);
                     arguments.Add(parameterInstance);
                 }
 
