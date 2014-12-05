@@ -41,7 +41,7 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the activator engine.
         /// </summary>
-        public Func<IObjectActivatorData, object> ActivatorEngine { get; set; } 
+        public Func<IObjectActivatorData, object> ActivatorEngine { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether types should be resolved implicit.
@@ -130,10 +130,13 @@ namespace MiniAutFac
             }
         }
 
-        /// <summary>Register all types from calling assembly decorated with attribute ContainerType.</summary>
-        public void Register()
+        /// <summary>
+        /// Registers the specified assemblies.
+        /// </summary>
+        /// <param name="assemblies">The assemblies.</param>
+        public void Register(params Assembly[] assemblies)
         {
-            var allTypes = Assembly.GetCallingAssembly().GetTypes();
+            var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes());
             foreach (var type in allTypes)
             {
                 var attributes = GetContainerTypeAttribute(type);
@@ -155,10 +158,23 @@ namespace MiniAutFac
             }
         }
 
-        /// <summary>The get container type attribute.</summary>
+
+        /// <summary>
+        /// Register all types from calling assembly decorated with attribute ContainerType.
+        /// </summary>
+        public void Register()
+        {
+            this.Register(Assembly.GetCallingAssembly());
+        }
+
+        /// <summary>
+        /// The get container type attribute.
+        /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>The <see cref="IEnumerable"/>.</returns>
-        private static IEnumerable<ContainerType> GetContainerTypeAttribute(Type type)
+        /// <returns>
+        /// The <see cref="IEnumerable" />.
+        /// </returns>
+        private static IEnumerable<ContainerType> GetContainerTypeAttribute(MemberInfo type)
         {
             var attributes = type.GetCustomAttributes(typeof(ContainerType), true).Cast<ContainerType>().ToList();
             return !attributes.Any() ? null : attributes;

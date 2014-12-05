@@ -10,7 +10,9 @@
 namespace MiniAutoFac.UnitTest
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Reflection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using MiniAutFac;
@@ -200,6 +202,17 @@ namespace MiniAutoFac.UnitTest
             var classInstance = builder.Build().Resolve<Class3>();
 
             Assert.AreEqual(typeof(Class3), classInstance.GetType());
+        }
+
+        [TestMethod]
+        public void RegisterTypesCollectionFromAssembly()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register(Assembly.GetExecutingAssembly());
+
+            var instances = builder.Build().Resolve<IEnumerable<ClassA>>();
+
+            Assert.AreEqual(instances.Count(), 4);
         }
 
         /// <summary>The registering types with attribute.</summary>
