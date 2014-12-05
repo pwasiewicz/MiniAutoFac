@@ -62,7 +62,7 @@ var builder = new ContainerBuilder();
 builder.Register<Foo1>().As<IFoo>();
 builder.Register<Foo2>().As<IFoo>();
 
-IEnumerable<IFoo> fooInstances = builder.Build().Resolve<IEnumerable<IFoo>();
+IEnumerable<IFoo> fooInstances = builder.Build().Resolve<IEnumerable<IFoo>>();
 ```
 
 ### Attribute-based registration
