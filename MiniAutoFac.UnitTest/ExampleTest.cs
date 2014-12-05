@@ -84,19 +84,19 @@ namespace MiniAutoFac.UnitTest
             builder.Build();
         }
 
-        /// <summary>
-        /// Registering the same type twice.
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(TypeAlreadyRegisteredException))]
-        public void RegisteringTheSameTypeTwice()
-        {
-            var builder = new ContainerBuilder();
+        ///// <summary>
+        ///// Registering the same type twice.
+        ///// </summary>
+        //[TestMethod]
+        //[ExpectedException(typeof(TypeAlreadyRegisteredException))]
+        //public void RegisteringTheSameTypeTwice()
+        //{
+        //    var builder = new ContainerBuilder();
 
-            builder.Register<ClassB>().As<ClassA>();
-            builder.Register<ClassB>().As<ClassA>();
-            builder.Build();
-        }
+        //    builder.Register<ClassB>().As<ClassA>();
+        //    builder.Register<ClassB>().As<ClassA>();
+        //    builder.Build();
+        //}
 
         /// <summary>
         /// Resolving the type of the unregistered.

@@ -16,24 +16,28 @@ namespace MiniAutFac
 
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Resolvers;
 
     /// <summary>
     /// The default container - instance factory.
     /// </summary>
-    internal class Container : IResolvable 
+    internal class Container : IResolvable
     {
+        private readonly IList<ConcreteResolverBase> additionalResolvers;
+ 
         /// <summary>
         /// Initializes a new instance of the <see cref="Container" /> class.
         /// </summary>
         public Container()
         {
             this.ResolveImplicit = false;
+            this.additionalResolvers = new List<ConcreteResolverBase>();
         }
 
         /// <summary>
         /// Gets or sets the type container.
         /// </summary>
-        internal IDictionary<Type, Type> TypeContainer { get; set; }
+        internal IDictionary<Type, IEnumerable<Type>> TypeContainer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether resolve implicit.
@@ -62,7 +66,6 @@ namespace MiniAutFac
         /// Resolves the instance of type T.
         /// </summary>
         /// <param name="type">The type to resolve.</param>
-        /// <typeparam name="T">Instance of type to create.</typeparam>
         /// <returns> New instance of type T. </returns>
         public object Resolve(Type type)
         {
@@ -72,23 +75,32 @@ namespace MiniAutFac
             }
 
             var desiredType = type;
-            var outputPair = this.TypeContainer.FirstOrDefault(pair => pair.Key == desiredType);
-            if (IsPairValuesNull(outputPair))
+            foreach (
+                var additionalResolver in
+                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type)))
+            {
+                return additionalResolver.Resolve(desiredType);
+            }
+
+
+            var registeredInstancesPair = this.TypeContainer.FirstOrDefault(pair => pair.Key == desiredType);
+            if (IsPairValuesNull(registeredInstancesPair))
             {
                 if (!this.ResolveImplicit)
                 {
                     throw new CannotResolveTypeException();
                 }
 
-
-                outputPair = this.TypeContainer.FirstOrDefault(pair => desiredType.IsAssignableFrom(pair.Value));
-                if (IsPairValuesNull(outputPair))
+                registeredInstancesPair =
+                    this.TypeContainer.FirstOrDefault(
+                        pair => pair.Value.Any(desiredType.IsAssignableFrom));
+                if (IsPairValuesNull(registeredInstancesPair))
                 {
                     throw new CannotResolveTypeException();
                 }
             }
 
-            var outputType = outputPair.Value;
+            var outputType = registeredInstancesPair.Value.Single();
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
@@ -129,6 +141,11 @@ namespace MiniAutFac
                         });
         }
 
+        internal void RegisterResolver(Func<Container, ConcreteResolverBase> additionalResolvableFactory)
+        {
+            this.additionalResolvers.Add(additionalResolvableFactory(this));
+        }
+
         /// <summary>
         /// Determines whether the specified pair is null.
         /// </summary>
@@ -136,7 +153,7 @@ namespace MiniAutFac
         /// <returns>
         ///   <c>true</c> if [is pair values null] [the specified pair]; otherwise, <c>false</c>.
         /// </returns>
-        private static bool IsPairValuesNull(KeyValuePair<Type, Type> pair)
+        private static bool IsPairValuesNull<TKey, TValue>(KeyValuePair<TKey, TValue> pair) where TKey : class where TValue :class
         {
             return pair.Key == null || pair.Value == null;
         }
@@ -176,6 +193,11 @@ namespace MiniAutFac
                 arguments.Clear();
                 return false;
             }
+        }
+
+        private IEnumerable<Type> SearchImplicitImplementations(Type type)
+        {
+            return this.TypeContainer.SelectMany(pair => pair.Value.Where(type.IsAssignableFrom));
         }
     }
 }

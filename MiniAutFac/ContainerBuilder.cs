@@ -9,15 +9,15 @@
 
 namespace MiniAutFac
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-
     using MiniAutFac.Attributes;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Helpers;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Resolvers;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// The container builder.
@@ -81,9 +81,12 @@ namespace MiniAutFac
         {
             var resolvable = new Container
                                  {
-                                     TypeContainer = new Dictionary<Type, Type>(),
+                                     TypeContainer = new Dictionary<Type, IEnumerable<Type>>(),
                                      ResolveImplicit = this.ResolveImplicit
                                  };
+
+            resolvable.RegisterResolver(cnt => new EnumerableResolver(cnt));
+
             if (this.ActivatorEngine == null)
             {
                 resolvable.ActivationEngine =
@@ -94,20 +97,16 @@ namespace MiniAutFac
                 resolvable.ActivationEngine = this.ActivatorEngine;
             }
 
-            foreach (var builderResolvableItem in this.typeContainer)
+            foreach (var builderResolvableItem in this.typeContainer.GroupBy(resolvableItem => resolvableItem.AsType))
             {
-                if (resolvable.TypeContainer.Keys.Any(type => type == builderResolvableItem.AsType))
-                {
-                    throw new TypeAlreadyRegisteredException();
-                }
-
-                if (builderResolvableItem.InType.IsInterface || builderResolvableItem.InType.IsAbstract)
+                if (builderResolvableItem.Any(type => type.InType.IsInterface) ||
+                    builderResolvableItem.Any(type => type.InType.IsAbstract))
                 {
                     throw new NotAssignableException();
                 }
 
-                var pair = new KeyValuePair<Type, Type>(
-                    builderResolvableItem.AsType, builderResolvableItem.InType);
+                var pair = new KeyValuePair<Type, IEnumerable<Type>>(
+                    builderResolvableItem.Key, builderResolvableItem.Select(rslb => rslb.InType).ToList());
                 resolvable.TypeContainer.Add(pair);
             }
 
@@ -173,7 +172,12 @@ namespace MiniAutFac
         {
             var graph = new Graph<Type>();
 
-            foreach (var type in resolvable.TypeContainer.Values)
+            foreach (var type in resolvable.TypeContainer.Values.SelectMany(types =>
+                                                                            {
+                                                                                var enumerable = types as IList<Type> ??
+                                                                                                 types.ToList();
+                                                                                return enumerable;
+                                                                            }))
             {
                 var constructors = type.GetConstructors();
                 foreach (
