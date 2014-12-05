@@ -56,6 +56,15 @@ builder.Register("Some.Awsomme.NS");
 var classInstance = builder.Build().Resolve<Foo>();
 ```
 
+### Registering multiple classes and resolving:
+```c#
+var builder = new ContainerBuilder();
+builder.Register<Foo1>().As<IFoo>();
+builder.Register<Foo2>().As<IFoo>();
+
+IEnumerable<IFoo> fooInstances = builder.Build().Resolve<IEnumerable<IFoo>>();
+```
+
 ### Attribute-based registration
 ```c#
 [ContainerType(typeof(Bar))]
