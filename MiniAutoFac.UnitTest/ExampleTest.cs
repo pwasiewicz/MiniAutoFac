@@ -212,7 +212,7 @@ namespace MiniAutoFac.UnitTest
 
             var instances = builder.Build().Resolve<IEnumerable<ClassA>>();
 
-            Assert.AreEqual(instances.Count(), 4);
+            Assert.AreEqual(instances.Count(), 2);
         }
 
         /// <summary>The registering types with attribute.</summary>
@@ -224,9 +224,10 @@ namespace MiniAutoFac.UnitTest
             var factory = builder.Build();
 
             var resolved1 = factory.Resolve<InterfaceForClassB>();
-            var resolved2 = factory.Resolve<ClassA>();
+            var resolved2 = factory.Resolve<IEnumerable<ClassA>>();
 
-            Assert.AreEqual(resolved1.GetType(), resolved2.GetType());
+            Assert.AreEqual(resolved1.GetType(), typeof(ClassB));
+            Assert.AreEqual(resolved2.Count(), 2);
         }
     }
 }

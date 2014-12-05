@@ -103,6 +103,11 @@ namespace MiniAutFac
                 }
             }
 
+            if (registeredInstancesPair.Value.Skip(1).Any())
+            {
+                throw new CannotResolveTypeException();
+            }
+
             var outputType = registeredInstancesPair.Value.First();
             if (!desiredType.IsAssignableFrom(outputType))
             {

@@ -176,7 +176,7 @@ namespace MiniAutFac
         /// </returns>
         private static IEnumerable<ContainerType> GetContainerTypeAttribute(MemberInfo type)
         {
-            var attributes = type.GetCustomAttributes(typeof(ContainerType), true).Cast<ContainerType>().ToList();
+            var attributes = type.GetCustomAttributes(typeof(ContainerType), false).Cast<ContainerType>().ToList();
             return !attributes.Any() ? null : attributes;
         }
 

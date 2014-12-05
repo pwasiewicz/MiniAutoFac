@@ -37,12 +37,25 @@
                 throw new InvalidOperationException("Fata error: List instance doesn't implements IList interface.");
             }
 
-            foreach (
-                var outputInstance in
-                    this.Container.SearchImplicitImplementations(hiddenType)
-                        .Select(outputType => this.Container.CreateInstanceRecursive(outputType)))
+            if (this.Container.ResolveImplicit)
             {
-                outputList.Add(outputInstance);
+                foreach (
+                    var outputInstance in
+                        this.Container.SearchImplicitImplementations(hiddenType)
+                            .Select(outputType => this.Container.CreateInstanceRecursive(outputType)).Distinct())
+                {
+                    outputList.Add(outputInstance);
+                }
+            }
+            else
+            {
+                foreach (
+                    var outputInstance in
+                        this.Container.TypeContainer[hiddenType]
+                            .Select(outputType => this.Container.CreateInstanceRecursive(outputType)))
+                {
+                    outputList.Add(outputInstance);
+                }
             }
 
             return outputList;
