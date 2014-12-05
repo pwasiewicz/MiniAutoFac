@@ -1,23 +1,65 @@
 ﻿namespace MiniAutFac.Resolvers
 {
+    using System.Collections;
+    using System.Collections.ObjectModel;
+    using System.Reflection;
+    using Extensions;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using Interfaces;
 
     internal class EnumerableResolver : ConcreteResolverBase
     {
-        public EnumerableResolver(Container container) : base(container)
+        public EnumerableResolver(Container container)
+            : base(container)
         {
         }
 
         public override bool Resolvable(Type target)
         {
+            if (!target.IsGenericType)
+            {
+                return false;
+            }
+
             var enumerableType = typeof(IEnumerable<>);
-            return target == enumerableType && !this.Container.TypeContainer.ContainsKey(target);
+            return target.GetGenericTypeDefinition() == enumerableType && !this.Container.TypeContainer.ContainsKey(target);
         }
 
         public override object Resolve(Type target)
         {
-            throw new NotImplementedException();
+            var hiddenType = target.GetGenericArguments()[0];
+
+            var outputList = this.Container.ActivationEngine(ActivatorDataForList(hiddenType)) as IList;
+            if (outputList == null)
+            {
+                throw new InvalidOperationException("Fata error: List instance doesn't implements IList interface.");
+            }
+
+            foreach (
+                var outputInstance in
+                    this.Container.SearchImplicitImplementations(hiddenType)
+                        .Select(outputType => this.Container.CreateInstanceRecursive(outputType)))
+            {
+                outputList.Add(outputInstance);
+            }
+
+            return outputList;
+        }
+
+        private static IObjectActivatorData ActivatorDataForList(Type itemType)
+        {
+            var typeList = typeof(List<>).MakeGenericType(itemType);
+
+            return new ObjectActivatorData
+                   {
+                       ConstructorArguments = Enumerable.Empty<object>(),
+                       ConstructorInfo =
+                           typeList.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+                                   .Single(ctor => !ctor.GetParameters().Any()),
+                       ResolvedType = typeList
+                   };
         }
     }
 }

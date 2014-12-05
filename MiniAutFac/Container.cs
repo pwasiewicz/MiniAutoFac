@@ -10,8 +10,10 @@
 namespace MiniAutFac
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Reflection;
 
     using MiniAutFac.Exceptions;
@@ -24,7 +26,7 @@ namespace MiniAutFac
     internal class Container : IResolvable
     {
         private readonly IList<ConcreteResolverBase> additionalResolvers;
- 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Container" /> class.
         /// </summary>
@@ -50,7 +52,7 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the activation engine.
         /// </summary>
-        internal Func<IObjectActivatorData, object> ActivationEngine { get; set; } 
+        internal Func<IObjectActivatorData, object> ActivationEngine { get; set; }
 
         /// <summary>
         /// Creates the instance of type T.
@@ -59,7 +61,8 @@ namespace MiniAutFac
         /// <returns> The <see cref="T"/>.  </returns>
         public T Resolve<T>()
         {
-            return (T)this.Resolve(typeof(T));
+            var resolved = this.Resolve(typeof(T));
+            return (T)resolved;
         }
 
         /// <summary>
@@ -100,15 +103,20 @@ namespace MiniAutFac
                 }
             }
 
-            var outputType = registeredInstancesPair.Value.Single();
+            var outputType = registeredInstancesPair.Value.First();
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
             }
 
+            return this.CreateInstanceRecursive(outputType);
+        }
+
+        internal object CreateInstanceRecursive(Type target)
+        {
             LinkedList<object> constructorArguments = null;
 
-            var constructors = outputType.GetConstructors();
+            var constructors = target.GetConstructors();
             ConstructorInfo ctor = null;
             if (constructors.Any())
             {
@@ -134,11 +142,11 @@ namespace MiniAutFac
             return
                 this.ActivationEngine(
                     new ObjectActivatorData
-                        {
-                            ResolvedType = outputType,
-                            ConstructorInfo = ctor,
-                            ConstructorArguments = constructorArguments
-                        });
+                    {
+                        ResolvedType = target,
+                        ConstructorInfo = ctor,
+                        ConstructorArguments = constructorArguments
+                    });
         }
 
         internal void RegisterResolver(Func<Container, ConcreteResolverBase> additionalResolvableFactory)
@@ -153,7 +161,9 @@ namespace MiniAutFac
         /// <returns>
         ///   <c>true</c> if [is pair values null] [the specified pair]; otherwise, <c>false</c>.
         /// </returns>
-        private static bool IsPairValuesNull<TKey, TValue>(KeyValuePair<TKey, TValue> pair) where TKey : class where TValue :class
+        private static bool IsPairValuesNull<TKey, TValue>(KeyValuePair<TKey, TValue> pair)
+            where TKey : class
+            where TValue : class
         {
             return pair.Key == null || pair.Value == null;
         }
@@ -193,11 +203,6 @@ namespace MiniAutFac
                 arguments.Clear();
                 return false;
             }
-        }
-
-        private IEnumerable<Type> SearchImplicitImplementations(Type type)
-        {
-            return this.TypeContainer.SelectMany(pair => pair.Value.Where(type.IsAssignableFrom));
         }
     }
 }

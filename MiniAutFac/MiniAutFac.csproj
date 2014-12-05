@@ -84,6 +84,7 @@
     <Compile Include="Exceptions\NotAssignableException.cs" />
     <Compile Include="Exceptions\TypeAlreadyRegisteredException.cs" />
     <Compile Include="Exceptions\TypeRepositoryEmptyException.cs" />
+    <Compile Include="Extensions\ContainerExtensions.cs" />
     <Compile Include="Helpers\Graph.cs" />
     <Compile Include="Interfaces\IBuilderResolvableItem.cs" />
     <Compile Include="Interfaces\IObjectActivatorData.cs" />

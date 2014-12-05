@@ -1,6 +1,11 @@
 ﻿namespace MiniAutoFac.UnitTest.TestClasses
 {
-    class ClassA
+    class ClassA : IFoo
     {
+    }
+
+    interface IFoo
+    {
+
     }
 }

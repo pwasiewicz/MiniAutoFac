@@ -9,6 +9,8 @@
 
 namespace MiniAutoFac.UnitTest
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using MiniAutFac;
@@ -84,19 +86,22 @@ namespace MiniAutoFac.UnitTest
             builder.Build();
         }
 
-        ///// <summary>
-        ///// Registering the same type twice.
-        ///// </summary>
-        //[TestMethod]
-        //[ExpectedException(typeof(TypeAlreadyRegisteredException))]
-        //public void RegisteringTheSameTypeTwice()
-        //{
-        //    var builder = new ContainerBuilder();
+        /// <summary>
+        /// Registering the same type twice.
+        /// </summary>
+        [TestMethod]
+        public void RegisteringTheSameTypeTwice()
+        {
+            var builder = new ContainerBuilder();
 
-        //    builder.Register<ClassB>().As<ClassA>();
-        //    builder.Register<ClassB>().As<ClassA>();
-        //    builder.Build();
-        //}
+            builder.Register<ClassA>().As<IFoo>();
+            builder.Register<ClassB>().As<IFoo>();
+            var continer = builder.Build();
+
+            var impl = continer.Resolve<IEnumerable<IFoo>>();
+
+            Assert.AreEqual(impl.Count(), 2);
+        }
 
         /// <summary>
         /// Resolving the type of the unregistered.
