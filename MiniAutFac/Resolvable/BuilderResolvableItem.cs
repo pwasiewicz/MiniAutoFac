@@ -7,24 +7,24 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace MiniAutFac
+namespace MiniAutFac.Resolvable
 {
+    using MiniAutFac.Exceptions;
+    using MiniAutFac.Parameters;
     using System;
     using System.Collections.Generic;
-    using MiniAutFac.Exceptions;
-    using MiniAutFac.Interfaces;
-    using MiniAutFac.Parameters;
 
     /// <summary>
     /// The builder resolvable item.
     /// </summary>
-    internal class BuilderResolvableItem : IBuilderResolvableItem
+    internal sealed class BuilderResolvableItem : BuilderResolvableItemBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BuilderResolvableItem" /> class.
         /// </summary>
+        /// <param name="builder">The builder.</param>
         /// <param name="inType">Type of the input.</param>
-        internal BuilderResolvableItem(Type inType)
+        internal BuilderResolvableItem(ContainerBuilder builder, Type inType) : base(builder)
         {
             this.Parameters = new List<Parameter>();
 
@@ -33,35 +33,17 @@ namespace MiniAutFac
         }
 
         /// <summary>
-        /// Gets or sets the registered type.
-        /// </summary>
-        /// <value> The type of the input.  </value>
-        internal Type InType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parameters.
-        /// </summary>
-        internal List<Parameter> Parameters { get; set; } 
-
-        /// <summary>
-        /// Gets or sets the output type.
-        /// </summary>
-        /// <value>The type of the output. </value>
-        internal Type AsType { get; set; }
-
-        /// <summary>
         /// Determines the output type of registered type with builder.
         /// </summary>
         /// <typeparam name="T">The output type.</typeparam>
-        public void As<T>()
+        public override void As(Type type)
         {
-            var asType = typeof(T);
-            if (!asType.IsAssignableFrom(this.InType))
+            if (!type.IsAssignableFrom(this.InType))
             {
                 throw new NotAssignableException();
             }
 
-            this.AsType = asType;
+            this.AsType = type;
         }
     }
 }

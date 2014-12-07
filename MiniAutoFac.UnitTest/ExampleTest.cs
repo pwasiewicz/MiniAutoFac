@@ -242,5 +242,17 @@ namespace MiniAutoFac.UnitTest
             Assert.AreEqual(resolved1.GetType(), typeof(ClassB));
             Assert.AreEqual(resolved2.Count(), 2);
         }
+
+        [TestMethod]
+        public void AsImplementedInterfaceRegistration()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<ClassA>().AsImplementedInterfaces();
+
+            var cnt = builder.Build();
+            var instance = cnt.Resolve<IFoo>();
+
+            Assert.AreEqual(typeof (ClassA), instance.GetType());
+        }
     }
 }

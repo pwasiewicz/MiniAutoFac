@@ -14,6 +14,7 @@ namespace MiniAutFac
     using MiniAutFac.Exceptions;
     using MiniAutFac.Helpers;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Resolvable;
     using MiniAutFac.Resolvers;
     using System;
     using System.Collections.Generic;
@@ -56,10 +57,10 @@ namespace MiniAutFac
         /// Registers the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>The <see cref="IBuilderResolvableItem"/>.</returns>
-        public IBuilderResolvableItem Register(Type type)
+        /// <returns></returns>
+        public BuilderResolvableItemBase Register(Type type)
         {
-            var builderItem = new BuilderResolvableItem(type);
+            var builderItem = new BuilderResolvableItem(this, type);
             this.typeContainer.Add(builderItem);
             return builderItem;
         }
@@ -69,7 +70,7 @@ namespace MiniAutFac
         /// </summary>
         /// <typeparam name="T">Type to register</typeparam>
         /// <returns>The IBuilderResolvableItem instance.</returns>
-        public IBuilderResolvableItem Register<T>()
+        public BuilderResolvableItemBase Register<T>()
         {
             return this.Register(typeof(T));
         }
@@ -98,7 +99,11 @@ namespace MiniAutFac
                 resolvable.ActivationEngine = this.ActivatorEngine;
             }
 
-            foreach (var builderResolvableItems in this.typeContainer.GroupBy(resolvableItem => resolvableItem.AsType))
+            foreach (
+                var builderResolvableItems in
+                    this.typeContainer
+                        .Where(resolvableItem => resolvableItem.AsType != null)
+                        .GroupBy(resolvableItem => resolvableItem.AsType))
             {
                 if (builderResolvableItems.Any(type => type.InType.IsInterface) ||
                     builderResolvableItems.Any(type => type.InType.IsAbstract))
@@ -160,7 +165,7 @@ namespace MiniAutFac
 
                 foreach (var containerType in attributes)
                 {
-                    var builderItem = new BuilderResolvableItem(type);
+                    var builderItem = new BuilderResolvableItem(this, type);
                     if (containerType.As != null)
                     {
                         builderItem.AsType = containerType.As;
