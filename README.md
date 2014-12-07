@@ -83,9 +83,17 @@ var instance1 = container.Resolve<Bar>();
 var instance2 = container.Resolve<IFoo>();
 ```
 
+### Registering type as implemented interfaces
+```c#
+var builder = new ContainerBuilder();
+builder.Register<Foo>().AsImplementedInterfaces();
+
+var cnt = builder.Build();
+var instance = cnt.Resolve<IFoo>();
+```
+
 Future
 ----------
 
-* Resolving collection (injection of `IEnumerable` type like AutoFac
 * `IDispolable` support
 * Lifetimescope similar to AutoFac
