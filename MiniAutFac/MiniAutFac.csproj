@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\ContainerType.cs" />
+    <Compile Include="ResolvableExtensions.cs" />
     <Compile Include="Resolvable\BuilderResolvableItem.cs" />
     <Compile Include="ContainerBuilder.cs" />
     <Compile Include="Container.cs" />
@@ -98,6 +99,13 @@
     <Compile Include="ResolvableItemExtensions.cs" />
     <Compile Include="Resolvers\ConcreteResolverBase.cs" />
     <Compile Include="Resolvers\EnumerableResolver.cs" />
+    <Compile Include="Interfaces\ILifetimeScope.cs" />
+    <Compile Include="ScopeExtensions.cs" />
+    <Compile Include="Scopes\DefaultScopes\PerDependencyScope.cs" />
+    <Compile Include="Scopes\DefaultScopes\PerLifetimeScope.cs" />
+    <Compile Include="Scopes\DefaultScopes\SingleInstanceScope.cs" />
+    <Compile Include="Scopes\LifetimeScope.cs" />
+    <Compile Include="Scopes\Scope.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

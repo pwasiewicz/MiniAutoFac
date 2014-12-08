@@ -9,16 +9,14 @@
 
 namespace MiniAutFac.Interfaces
 {
+    using System;
+
     /// <summary>
     /// The Resolvable interface - for factory.
     /// </summary>
     public interface IResolvable
     {
-        /// <summary>
-        /// Resolves the instance of type T.
-        /// </summary>
-        /// <typeparam name="T">Instance of type to create.</typeparam>
-        /// <returns>New instance of type T.</returns>
-        T Resolve<T>();
+
+        object Resolve(Type type);
     }
 }

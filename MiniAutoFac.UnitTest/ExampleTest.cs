@@ -252,7 +252,47 @@ namespace MiniAutoFac.UnitTest
             var cnt = builder.Build();
             var instance = cnt.Resolve<IFoo>();
 
-            Assert.AreEqual(typeof (ClassA), instance.GetType());
+            Assert.AreEqual(typeof(ClassA), instance.GetType());
+        }
+
+        [TestMethod]
+        public void NestedLifetimeScopeInstancePerDepedency()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<ClassA>().As<IFoo>().PerLifetimeScope();
+
+            var cnt = builder.Build();
+            var firstInstance = cnt.Resolve<IFoo>();
+
+            var nestedScope = cnt.BeginLifetimeScope();
+            var nestedFirst = nestedScope.Resolve<IFoo>();
+
+            var secondInstance = cnt.Resolve<IFoo>();
+            var nestedSecond = nestedScope.Resolve<IFoo>();
+
+            Assert.AreSame(firstInstance, secondInstance);
+            Assert.AreSame(nestedFirst, nestedSecond);
+            Assert.AreNotSame(firstInstance, nestedFirst);
+        }
+
+        [TestMethod]
+        public void NestedLifetimeScopSingleeInstance()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<ClassA>().As<IFoo>().SingleInstance();
+
+            var cnt = builder.Build();
+            var firstInstance = cnt.Resolve<IFoo>();
+
+            var nestedScope = cnt.BeginLifetimeScope();
+            var nestedFirst = nestedScope.Resolve<IFoo>();
+
+            var secondInstance = cnt.Resolve<IFoo>();
+            var nestedSecond = nestedScope.Resolve<IFoo>();
+
+            Assert.AreSame(firstInstance, secondInstance);
+            Assert.AreSame(nestedFirst, nestedSecond);
+            Assert.AreSame(firstInstance, nestedFirst);
         }
     }
 }

@@ -31,7 +31,7 @@
         /// <returns></returns>
         public static BuilderResolvableItemBase As<T>(this BuilderResolvableItemBase resolvableItemBase)
         {
-            resolvableItemBase.As(typeof (T));
+            resolvableItemBase.As(typeof(T));
             return resolvableItemBase;
         }
     }

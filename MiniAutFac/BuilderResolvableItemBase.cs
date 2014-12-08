@@ -12,6 +12,8 @@ namespace MiniAutFac
     using System;
     using System.Collections.Generic;
     using MiniAutFac.Parameters;
+    using Scopes;
+    using Scopes.DefaultScopes;
 
     /// <summary>
     /// The BuilderResolvableItem interface.
@@ -27,6 +29,7 @@ namespace MiniAutFac
         protected BuilderResolvableItemBase(ContainerBuilder origin)
         {
             this.Origin = origin;
+            this.Scope = new PerDependencyScope();
         }
 
         /// <summary>
@@ -39,12 +42,17 @@ namespace MiniAutFac
         /// Gets or sets the output type.
         /// </summary>
         /// <value>The type of the output. </value>
-        internal Type AsType { get; set; }
+        internal virtual Type AsType { get; set; }
 
         /// <summary>
         /// Gets or sets the parameters.
         /// </summary>
         internal virtual List<Parameter> Parameters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scope.
+        /// </summary>
+        internal virtual Scope Scope { get; set; }
 
         /// <summary>
         /// Determines the output type of registered type with builder.

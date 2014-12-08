@@ -79,7 +79,7 @@ namespace MiniAutFac
         /// Builds this instance as IResolvable and check if type collection is correct.
         /// </summary>
         /// <returns>IResolvable instance</returns>
-        public IResolvable Build()
+        public ILifetimeScope Build()
         {
             var resolvable = new Container
                                  {
@@ -87,7 +87,7 @@ namespace MiniAutFac
                                      ResolveImplicit = this.ResolveImplicit
                                  };
 
-            resolvable.RegisterResolver(cnt => new EnumerableResolver(cnt));
+            resolvable.RegisterResolver(cnt => new EnumerableResolver());
 
             if (this.ActivatorEngine == null)
             {
@@ -119,6 +119,11 @@ namespace MiniAutFac
                      select item).Any())
                 {
                     throw new InvalidOperationException("Cannot add parameter. The same already registered.");
+                }
+
+                foreach (var item in builderResolvableItems)
+                {
+                    ctx.Scopes.Add(item.InType, item.Scope);
                 }
 
 

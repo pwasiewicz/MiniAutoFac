@@ -1,22 +1,21 @@
 ﻿namespace MiniAutFac.Resolvers
 {
-    using System.Collections;
-    using System.Collections.ObjectModel;
-    using System.Reflection;
-    using Extensions;
+    using Interfaces;
+    using Scopes;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using Interfaces;
+    using System.Reflection;
 
     internal class EnumerableResolver : ConcreteResolverBase
     {
-        public EnumerableResolver(Container container)
-            : base(container)
-        {
-        }
-
-        public override bool Resolvable(Type target)
+        /// <summary>
+        /// Resolvables the specified target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <returns></returns>
+        public override bool Resolvable(Type target, LifetimeScope scope)
         {
             if (!target.IsGenericType)
             {
@@ -24,35 +23,57 @@
             }
 
             var enumerableType = typeof(IEnumerable<>);
-            return target.GetGenericTypeDefinition() == enumerableType && !this.Container.TypeContainer.ContainsKey(target);
+            return target.GetGenericTypeDefinition() == enumerableType &&
+                   !scope.Container.TypeContainer.ContainsKey(target);
         }
 
-        public override object Resolve(Type target)
+        /// <summary>
+        /// Resolves the specified target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="scope">The scope.</param>
+        /// <returns></returns>
+        /// <exception cref="System.InvalidOperationException">Fata error: List instance doesn't implements IList interface.</exception>
+        /// <exception cref="System.NotSupportedException">Not supported yet.</exception>
+        public override object Resolve(Type target, LifetimeScope scope)
         {
             var hiddenType = target.GetGenericArguments()[0];
 
-            var outputList = this.Container.ActivationEngine(ActivatorDataForList(hiddenType)) as IList;
+            var outputList = scope.Container.ActivationEngine(ActivatorDataForList(hiddenType)) as IList;
             if (outputList == null)
             {
                 throw new InvalidOperationException("Fata error: List instance doesn't implements IList interface.");
             }
 
-            if (this.Container.ResolveImplicit)
+            if (scope.Container.ResolveImplicit)
             {
                 throw new NotSupportedException("Not supported yet.");
             }
 
-            foreach (
-                var outputInstance in
-                    this.Container.TypeContainer[hiddenType]
-                        .Select(outputType => this.Container.CreateInstanceRecursive(this.Container.TypeContainer[hiddenType], outputType)))
+            var typeContext = scope.Container.TypeContainer[hiddenType];
+            foreach (var outputType in typeContext)
             {
-                outputList.Add(outputInstance);
+                var scopeResovler = typeContext.Scopes[outputType];
+                object instance;
+                if (!scopeResovler.GetInstance(scope, out instance))
+                {
+                    var ctx = scope.Container.TypeContainer[hiddenType];
+                    instance = scope.Container.CreateInstanceRecursive(ctx, outputType);
+
+                    scopeResovler.Resolved(scope, outputType, instance);
+                }
+
+                outputList.Add(instance);
             }
 
             return outputList;
         }
 
+        /// <summary>
+        /// Activators the data for list.
+        /// </summary>
+        /// <param name="itemType">Type of the item.</param>
+        /// <returns></returns>
         private static IObjectActivatorData ActivatorDataForList(Type itemType)
         {
             var typeList = typeof(List<>).MakeGenericType(itemType);

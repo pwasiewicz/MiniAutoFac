@@ -9,21 +9,20 @@
 
 namespace MiniAutFac
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Reflection;
     using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
     using MiniAutFac.Resolvers;
+    using Scopes;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// The default container - instance factory.
     /// </summary>
-    internal class Container : IResolvable
+    internal class Container : LifetimeScope
     {
         private readonly IList<ConcreteResolverBase> additionalResolvers;
 
@@ -31,6 +30,7 @@ namespace MiniAutFac
         /// Initializes a new instance of the <see cref="Container" /> class.
         /// </summary>
         public Container()
+            : base(null)
         {
             this.ResolveImplicit = false;
             this.additionalResolvers = new List<ConcreteResolverBase>();
@@ -55,22 +55,11 @@ namespace MiniAutFac
         internal Func<IObjectActivatorData, object> ActivationEngine { get; set; }
 
         /// <summary>
-        /// Creates the instance of type T.
-        /// </summary>
-        /// <typeparam name="T">Type to resolve.</typeparam>
-        /// <returns> The <see cref="T"/>.  </returns>
-        public T Resolve<T>()
-        {
-            var resolved = this.Resolve(typeof(T));
-            return (T)resolved;
-        }
-
-        /// <summary>
         /// Resolves the instance of type T.
         /// </summary>
         /// <param name="type">The type to resolve.</param>
         /// <returns> New instance of type T. </returns>
-        public object Resolve(Type type)
+        public object ResolveInternal(Type type, LifetimeScope scope)
         {
             if (this.TypeContainer == null)
             {
@@ -80,9 +69,9 @@ namespace MiniAutFac
             var desiredType = type;
             foreach (
                 var additionalResolver in
-                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type)))
+                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type, scope)))
             {
-                return additionalResolver.Resolve(desiredType);
+                return additionalResolver.Resolve(desiredType, scope);
             }
 
 
@@ -117,6 +106,13 @@ namespace MiniAutFac
             return this.CreateInstanceRecursive(registeredInstancesPair.Value, outputType);
         }
 
+        /// <summary>
+        /// Creates the instance recursive.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        /// <param name="target">The target.</param>
+        /// <returns></returns>
+        /// <exception cref="NotAssignableException"></exception>
         internal object CreateInstanceRecursive(RegisteredTypeContext ctx, Type target)
         {
             LinkedList<object> constructorArguments = null;
@@ -154,6 +150,10 @@ namespace MiniAutFac
                     });
         }
 
+        /// <summary>
+        /// Registers the resolver.
+        /// </summary>
+        /// <param name="additionalResolvableFactory">The additional resolvable factory.</param>
         internal void RegisterResolver(Func<Container, ConcreteResolverBase> additionalResolvableFactory)
         {
             this.additionalResolvers.Add(additionalResolvableFactory(this));

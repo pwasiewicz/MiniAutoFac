@@ -1,17 +1,23 @@
 ﻿namespace MiniAutFac.Resolvers
 {
     using System;
+    using Scopes;
 
     internal abstract class ConcreteResolverBase
     {
-        protected readonly Container Container;
+        /// <summary>
+        /// Resolvables the specified target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <returns></returns>
+        public abstract bool Resolvable(Type target, LifetimeScope scope);
 
-        protected ConcreteResolverBase(Container container)
-        {
-            this.Container = container;
-        }
-
-        public abstract bool Resolvable(Type target);
-        public abstract object Resolve(Type target);
+        /// <summary>
+        /// Resolves the specified target.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="scope">The scope.</param>
+        /// <returns></returns>
+        public abstract object Resolve(Type target, LifetimeScope scope);
     }
 }
