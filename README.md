@@ -10,9 +10,11 @@ MiniAutFac was created in order to understand how reflection and original AutoFa
 
 Features
 * Simple code 
+* Lightweight (about 30 kb)
 * Resolving constructors parameters
 * Detecting circular dependencies (only throws exception)
 * Attribute-based registration
+* AutoFac-like lifetime scopes
 
 Usage
 -----------
