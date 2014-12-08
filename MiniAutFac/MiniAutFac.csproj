@@ -96,7 +96,7 @@
     <Compile Include="Parameters\Concrete\NamedParameter.cs" />
     <Compile Include="Parameters\Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResolvableItemExtensions.cs" />
+    <Compile Include="RegisteringExtensions.cs" />
     <Compile Include="Resolvers\ConcreteResolverBase.cs" />
     <Compile Include="Resolvers\EnumerableResolver.cs" />
     <Compile Include="Interfaces\ILifetimeScope.cs" />

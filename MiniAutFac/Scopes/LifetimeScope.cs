@@ -7,38 +7,18 @@
 
     internal class LifetimeScope : ILifetimeScope
     {
-        /// <summary>
-        /// The container
-        /// </summary>
         private Container container;
 
-        /// <summary>
-        /// The parent scope
-        /// </summary>
         internal LifetimeScope ParentScope;
 
-        /// <summary>
-        /// The child scopes
-        /// </summary>
         internal List<LifetimeScope> ChildScopes;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LifetimeScope"/> class.
-        /// </summary>
-        /// <param name="parent">The parent.</param>
         public LifetimeScope(LifetimeScope parent)
         {
             this.ParentScope = parent;
             this.ChildScopes = new List<LifetimeScope>();
         }
 
-        /// <summary>
-        /// Gets the container.
-        /// </summary>
-        /// <value>
-        /// The container.
-        /// </value>
-        /// <exception cref="System.ArgumentException">Not expected scope hierachy - cannot find origin container.</exception>
         internal Container Container
         {
             get

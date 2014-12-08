@@ -1,5 +1,6 @@
 ﻿namespace MiniAutFac
 {
+    using System;
     using MiniAutFac.Parameters.Concrete;
 
     public static class ParametersExtensions
@@ -14,6 +15,11 @@
         public static BuilderResolvableItemBase WithNamedParameter(this BuilderResolvableItemBase builderResolvableItem,
                                                                    string name, object value)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
             builderResolvableItem.Parameters.Add(new NamedParameter(name, value));
             return builderResolvableItem;
         }

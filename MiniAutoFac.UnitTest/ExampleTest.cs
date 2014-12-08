@@ -256,7 +256,7 @@ namespace MiniAutoFac.UnitTest
         }
 
         [TestMethod]
-        public void NestedLifetimeScopeInstancePerDepedency()
+        public void NestedLifetimeScopeInstancePerDependency()
         {
             var builder = new ContainerBuilder();
             builder.Register<ClassA>().As<IFoo>().PerLifetimeScope();

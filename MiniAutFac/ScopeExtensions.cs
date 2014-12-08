@@ -5,10 +5,10 @@
     public static class ScopeExtensions
     {
         /// <summary>
-        /// Pers the dependency.
+        /// Default. Every instance request will produce new instance.
         /// </summary>
-        /// <param name="resolvable">The resolvable.</param>
-        /// <returns></returns>
+        /// <param name="resolvable">The resolvable builder.</param>
+        /// <returns>The resolvable builder.</returns>
         public static BuilderResolvableItemBase PerDependency(this BuilderResolvableItemBase resolvable)
         {
             resolvable.Scope = new PerDependencyScope();
@@ -16,10 +16,10 @@
         }
 
         /// <summary>
-        /// Pers the lifetime scope.
+        /// Registered instance will live only within liftimescope.
         /// </summary>
-        /// <param name="resolvable">The resolvable.</param>
-        /// <returns></returns>
+        /// <param name="resolvable">The resolvable builder.</param>
+        /// <returns>The resolvable builder.</returns>
         public static BuilderResolvableItemBase PerLifetimeScope(this BuilderResolvableItemBase resolvable)
         {
             resolvable.Scope = new PerLifetimeScope();
@@ -27,10 +27,10 @@
         }
 
         /// <summary>
-        /// Singles the instance.
+        /// Registered instance will have only one instance per container including nested liftime scopes.
         /// </summary>
-        /// <param name="resolvable">The resolvable.</param>
-        /// <returns></returns>
+        /// <param name="resolvable">The resolvable builder.</param>
+        /// <returns>The resolvable builder.</returns>
         public static BuilderResolvableItemBase SingleInstance(this BuilderResolvableItemBase resolvable)
         {
             resolvable.Scope = new SingleInstanceScope();

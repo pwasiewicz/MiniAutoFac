@@ -6,9 +6,9 @@
     internal class PerLifetimeScope : Scope
     {
         /// <summary>
-        /// The lifetime scopes
+        /// The lifetime scopes and its instances of specified type.
         /// </summary>
-        private IDictionary<LifetimeScope, object> lifetimeScopes;
+        private readonly IDictionary<LifetimeScope, object> lifetimeScopes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PerLifetimeScope"/> class.
@@ -17,7 +17,6 @@
         {
             this.lifetimeScopes = new Dictionary<LifetimeScope, object>();
         }
-
 
         public override bool GetInstance(LifetimeScope scope, out object instance)
         {
