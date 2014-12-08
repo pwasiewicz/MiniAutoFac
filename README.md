@@ -10,9 +10,11 @@ MiniAutFac was created in order to understand how reflection and original AutoFa
 
 Features
 * Simple code 
+* Lightweight (about 30 kb)
 * Resolving constructors parameters
 * Detecting circular dependencies (only throws exception)
 * Attribute-based registration
+* AutoFac-like lifetime scopes
 
 Usage
 -----------
@@ -91,9 +93,32 @@ builder.Register<Foo>().AsImplementedInterfaces();
 var cnt = builder.Build();
 var instance = cnt.Resolve<IFoo>();
 ```
+### Lifetime scopes
 
-Future
-----------
+After building container, you can create many nested lifetime scopes that manages a life cycle of registered instances.
 
-* `IDispolable` support
-* Lifetimescope similar to AutoFac
+```c#
+var builder = new ContainerBuilder();
+builder.Register<Foo>().PerLifetimeScope();
+
+using (var container = builder.Build())
+{
+    var foo = container.Resolve<Foo>();
+    
+    var scope = container.BeginLifetimeScope();
+    var nextFoo = scope.Resolve<Foo>();
+    
+    var anotherFoo = container.Resolve<Foo>();
+    
+    // when container is disposed, it disposes also all child scopes
+}
+
+// references foo and anotherFoo are the same, but they are different to nextFoo 
+//(it was created in other scope).
+```
+
+Possible scopes so far:
+* `SingleInstance` - single instance per container (shared among all nested lifetime scopes)
+* `PerDependency` - instance created every `Resolve` request
+* `PerLifetimeScope` - instance shared among single lifetime scope
+
