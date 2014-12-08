@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.1</version>
+    <title>MiniAutFac</title>
+    <authors>Patryk Wąsiewicz</authors>
+    <owners>Patryk Wąsiewicz</owners>
+    <licenseUrl>https://github.com/pwasiewicz/miniautofac/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/pwasiewicz/miniautofac</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Mini IoC container.</description>
+    <releaseNotes>First release of MiniAutFac</releaseNotes>
+    <copyright>Copyright pwasiewicz 2014</copyright>
+    <tags>dependency injection container ioc</tags>
+  </metadata>
+</package>
