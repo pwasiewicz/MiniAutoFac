@@ -5,6 +5,8 @@
 
     internal class PerLifetimeScope : Scope
     {
+        private readonly object lockObject = new object();
+
         /// <summary>
         /// The lifetime scopes and its instances of specified type.
         /// </summary>
@@ -18,16 +20,19 @@
             this.lifetimeScopes = new Dictionary<LifetimeScope, object>();
         }
 
-        public override void GetInstance(LifetimeScope scope, Func<object> factory, out object value)
+        public override void GetInstance(LifetimeScope scope, Func<object> valueFactory, out object value)
         {
-            if (this.lifetimeScopes.ContainsKey(scope))
+            object result;
+            lock (this.lockObject)
             {
-                value = this.lifetimeScopes[scope];
-                return;
+                if (!this.lifetimeScopes.TryGetValue(scope, out result))
+                {
+                    result = valueFactory();
+                    this.lifetimeScopes.Add(scope, result);
+                }                
             }
 
-            value = factory();
-            this.lifetimeScopes.Add(scope, value);
+            value = result;
         }
     }
 }

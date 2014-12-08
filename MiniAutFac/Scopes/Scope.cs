@@ -4,6 +4,6 @@
 
     internal abstract class Scope
     {
-        public abstract void GetInstance(LifetimeScope scope, Func<object> instanceFactory, out object value);
+        public abstract void GetInstance(LifetimeScope scope, Func<object> valueFactory, out object value);
     }
 }

@@ -8,12 +8,12 @@
         /// Gets the value.
         /// </summary>
         /// <param name="scope">The scope.</param>
-        /// <param name="factory"></param>
+        /// <param name="valueFactory"></param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public override void GetInstance(LifetimeScope scope, Func<object> factory, out object value)
+        public override void GetInstance(LifetimeScope scope, Func<object> valueFactory, out object value)
         {
-            value = factory();
+            value = valueFactory();
         }
     }
 }

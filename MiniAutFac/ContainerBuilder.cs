@@ -9,6 +9,7 @@
 
 namespace MiniAutFac
 {
+    using System.Reflection;
     using MiniAutFac.Attributes;
     using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
@@ -19,7 +20,6 @@ namespace MiniAutFac
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
 
     /// <summary>
     /// The container builder.
