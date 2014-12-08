@@ -16,6 +16,14 @@ Features
 * Attribute-based registration
 * AutoFac-like lifetime scopes
 
+Releases
+-----------
+
+### 1.1
+* First release
+* Base features
+
+
 Usage
 -----------
 
