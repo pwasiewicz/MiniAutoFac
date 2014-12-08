@@ -75,8 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\ContainerType.cs" />
-    <Compile Include="Interfaces\ILifetimeScope.cs" />
-    <Compile Include="LifetimeScope.cs" />
     <Compile Include="Resolvable\BuilderResolvableItem.cs" />
     <Compile Include="ContainerBuilder.cs" />
     <Compile Include="Container.cs" />

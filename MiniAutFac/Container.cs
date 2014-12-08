@@ -9,19 +9,21 @@
 
 namespace MiniAutFac
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
     using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
     using MiniAutFac.Resolvers;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
 
     /// <summary>
     /// The default container - instance factory.
     /// </summary>
-    internal class Container : LifetimeScope
+    internal class Container : IResolvable
     {
         private readonly IList<ConcreteResolverBase> additionalResolvers;
 
@@ -29,7 +31,6 @@ namespace MiniAutFac
         /// Initializes a new instance of the <see cref="Container" /> class.
         /// </summary>
         public Container()
-            : base(null)
         {
             this.ResolveImplicit = false;
             this.additionalResolvers = new List<ConcreteResolverBase>();
@@ -58,14 +59,10 @@ namespace MiniAutFac
         /// </summary>
         /// <typeparam name="T">Type to resolve.</typeparam>
         /// <returns> The <see cref="T"/>.  </returns>
-        public override T Resolve<T>()
+        public T Resolve<T>()
         {
             var resolved = this.Resolve(typeof(T));
             return (T)resolved;
-        }
-
-        public override void Dispose()
-        {
         }
 
         /// <summary>
@@ -73,7 +70,7 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="type">The type to resolve.</param>
         /// <returns> New instance of type T. </returns>
-        public override object Resolve(Type type)
+        public object Resolve(Type type)
         {
             if (this.TypeContainer == null)
             {
@@ -195,16 +192,9 @@ namespace MiniAutFac
                 throw new ArgumentNullException("arguments");
             }
 
-            if (constructorInfo.DeclaringType == null)
-            {
-                throw new ArgumentException("Constructor without not declaring type not expected.", "constructorInfo");
-            }
-
             arguments.Clear();
 
             var parameters = constructorInfo.GetParameters().OrderBy(x => x.Position);
-
-            // ReSharper disable once AssignNullToNotNullAttribute
             var declaredParameters = ctx.Parameters[constructorInfo.DeclaringType];
 
             try
@@ -212,10 +202,8 @@ namespace MiniAutFac
                 foreach (var parameterInfo in parameters)
                 {
                     var paramterResolved = false;
-                    var parameterInfoCp = parameterInfo;
-
                     foreach (
-                        var parameterCtx in declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfoCp)))
+                        var parameterCtx in declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
                     {
                         arguments.Add(parameterCtx.GetValue());
                         paramterResolved = true;
