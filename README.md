@@ -19,6 +19,9 @@ Features
 Releases
 -----------
 
+### (Future) 1.2
+* Removed registering from namespace (found it useless and not efficient)
+
 ### 1.1
 * First release
 * Base features
@@ -57,14 +60,7 @@ builder.Register<Foo>().As<IFoo>();
 var resolver = builder.Build();
 var fooInstance = resolver.Resolve<IFoo>(); // fooInstance.GetType() == typeof(Foo)
 ```
-### Auto-registering types from namespaces
 
-```c#
-var builder = new ContainerBuilder { ResolveImplicit = true };
-builder.Register("Some.Awsomme.NS");
-
-var classInstance = builder.Build().Resolve<Foo>();
-```
 
 ### Registering multiple classes and resolving:
 ```c#
