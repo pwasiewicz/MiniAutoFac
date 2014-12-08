@@ -21,7 +21,7 @@ Releases
 
 ### (future release) 1.2
 * Removed registering from namespace (found it useless and not efficient) (done)
-* Registering multiple classes choosed with predicate within assemblies (in progress)
+* Registering multiple classes chosen with predicate within assemblies (in progress)
 
 ### 1.1
 * First release
