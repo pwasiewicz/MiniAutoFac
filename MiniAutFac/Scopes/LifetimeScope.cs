@@ -4,6 +4,7 @@
     using Interfaces;
     using System;
     using System.Collections.Generic;
+    using MiniAutFac.Exceptions;
 
     internal class LifetimeScope : ILifetimeScope
     {
@@ -13,10 +14,15 @@
 
         internal List<LifetimeScope> ChildScopes;
 
+        internal HashSet<object> ScopeAllInstances;
+
+        private bool disposed;
+
         public LifetimeScope(LifetimeScope parent)
         {
             this.ParentScope = parent;
             this.ChildScopes = new List<LifetimeScope>();
+            this.ScopeAllInstances = new HashSet<object>();
         }
 
         internal Container Container
@@ -46,6 +52,11 @@
 
         public virtual object Resolve(Type type)
         {
+            if (this.disposed)
+            {
+                throw new LifetimeScopeDisposedException();
+            }
+
             if (!this.Container.TypeContainer.ContainsKey(type))
             {
                 return this.Container.ResolveInternal(type, this);
@@ -67,6 +78,13 @@
             {
                 childScope.Dispose();
             }
+
+            foreach (var disposable in this.ScopeAllInstances.OfType<IDisposable>())
+            {
+                disposable.Dispose();
+            }
+
+            this.disposed = true;
         }
 
         public virtual ILifetimeScope BeginLifetimeScope()

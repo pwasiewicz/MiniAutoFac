@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\ContainerType.cs" />
+    <Compile Include="Exceptions\LifetimeScopeDisposedException.cs" />
     <Compile Include="ResolvableExtensions.cs" />
     <Compile Include="Resolvable\BuilderResolvableItem.cs" />
     <Compile Include="ContainerBuilder.cs" />

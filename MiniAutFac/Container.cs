@@ -68,10 +68,12 @@ namespace MiniAutFac
 
             var desiredType = type;
             foreach (
-                var additionalResolver in
-                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type, scope)))
+                var instance in
+                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type, scope))
+                        .Select(additionalResolver => additionalResolver.Resolve(desiredType, scope)))
             {
-                return additionalResolver.Resolve(desiredType, scope);
+                scope.ScopeAllInstances.Add(instance);
+                return instance;
             }
 
 
@@ -103,7 +105,9 @@ namespace MiniAutFac
                 throw new CannotResolveTypeException();
             }
 
-            return this.CreateInstanceRecursive(registeredInstancesPair.Value, outputType);
+            var resolvedInstance = this.CreateInstanceRecursive(registeredInstancesPair.Value, outputType);
+            scope.ScopeAllInstances.Add(resolvedInstance);
+            return resolvedInstance;
         }
 
         /// <summary>

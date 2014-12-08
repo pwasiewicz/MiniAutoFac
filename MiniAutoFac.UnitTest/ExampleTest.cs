@@ -294,5 +294,37 @@ namespace MiniAutoFac.UnitTest
             Assert.AreSame(nestedFirst, nestedSecond);
             Assert.AreSame(firstInstance, nestedFirst);
         }
+
+        [TestMethod]
+        public void InstancesPerLifeScopeDispoed()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<DisposableClass>().PerLifetimeScope();
+
+            var cnt = bld.Build();
+
+            var mainInstance = cnt.Resolve<DisposableClass>();
+
+            var nestedScope = cnt.BeginLifetimeScope();
+            var nestedInstance = nestedScope.Resolve<DisposableClass>();
+
+            cnt.Dispose();
+
+            Assert.IsTrue(mainInstance.DisposeCalled);
+            Assert.IsTrue(nestedInstance.DisposeCalled);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(LifetimeScopeDisposedException))]
+        public void ResolvingAfterDisposalThrowsException()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<DisposableClass>();
+
+            var cnt = bld.Build();
+            cnt.Dispose();
+
+            cnt.Resolve<DisposableClass>();
+        }
     }
 }
