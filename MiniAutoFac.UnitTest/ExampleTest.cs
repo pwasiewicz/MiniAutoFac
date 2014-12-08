@@ -205,18 +205,6 @@ namespace MiniAutoFac.UnitTest
             Assert.AreEqual(typeof(Class2), resolvedInstance.GetType());
         }
 
-        /// <summary>The registering types from namespace.</summary>
-        [TestMethod]
-        public void RegisteringTypesFromNamespace()
-        {
-            var builder = new ContainerBuilder { ResolveImplicit = true };
-            builder.Register("MiniAutoFac.UnitTest.TestClasses.SampleNamespace");
-
-            var classInstance = builder.Build().Resolve<Class3>();
-
-            Assert.AreEqual(typeof(Class3), classInstance.GetType());
-        }
-
         [TestMethod]
         public void RegisterTypesCollectionFromAssembly()
         {

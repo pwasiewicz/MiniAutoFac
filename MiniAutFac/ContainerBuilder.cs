@@ -139,21 +139,6 @@ namespace MiniAutFac
         }
 
         /// <summary>
-        /// Register all types from provided namespaces.
-        /// </summary>
-        /// <param name="namespaceName">The namespace name.</param>
-        public void Register(string namespaceName)
-        {
-            var types =
-                Assembly.GetCallingAssembly().GetTypes().Where(x => x.IsClass).Where(x => x.Namespace == namespaceName);
-
-            foreach (var type in types)
-            {
-                this.Register(type);
-            }
-        }
-
-        /// <summary>
         /// Registers the specified assemblies.
         /// </summary>
         /// <param name="assemblies">The assemblies.</param>
