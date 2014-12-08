@@ -55,14 +55,9 @@
             var outputType = ctx.First();
 
             var scope = ctx.Scopes[outputType];
-            object instance;
-            if (scope.GetInstance(this, out instance))
-            {
-                return instance;
-            }
 
-            instance = this.Container.ResolveInternal(type, this);
-            scope.Resolved(this, type, instance);
+            object instance;
+            scope.GetInstance(this, () => this.Container.ResolveInternal(type, this), out instance);
             return instance;
         }
 

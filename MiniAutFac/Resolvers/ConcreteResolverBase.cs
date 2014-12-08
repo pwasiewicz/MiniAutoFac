@@ -16,8 +16,8 @@
         /// Resolves the specified target.
         /// </summary>
         /// <param name="target">The target.</param>
-        /// <param name="scope">The scope.</param>
+        /// <param name="lifetimeScope">The lifetimeScope.</param>
         /// <returns></returns>
-        public abstract object Resolve(Type target, LifetimeScope scope);
+        public abstract object Resolve(Type target, LifetimeScope lifetimeScope);
     }
 }

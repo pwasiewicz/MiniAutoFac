@@ -5,25 +5,15 @@
     internal class PerDependencyScope : Scope
     {
         /// <summary>
-        /// Gets the instance.
+        /// Gets the value.
         /// </summary>
         /// <param name="scope">The scope.</param>
-        /// <param name="instance">The instance.</param>
+        /// <param name="factory"></param>
+        /// <param name="value">The value.</param>
         /// <returns></returns>
-        public override bool GetInstance(LifetimeScope scope, out object instance)
+        public override void GetInstance(LifetimeScope scope, Func<object> factory, out object value)
         {
-            instance = null;
-            return false;
-        }
-
-        /// <summary>
-        /// Resolveds the specified output type.
-        /// </summary>
-        /// <param name="scope">The scope.</param>
-        /// <param name="outputType">Type of the output.</param>
-        /// <param name="instance">The instance.</param>
-        public override void Resolved(LifetimeScope scope, Type outputType, object instance)
-        {
+            value = factory();
         }
     }
 }

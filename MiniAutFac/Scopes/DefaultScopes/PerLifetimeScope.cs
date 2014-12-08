@@ -11,46 +11,23 @@
         private readonly IDictionary<LifetimeScope, object> lifetimeScopes;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerLifetimeScope"/> class.
+        /// Initializes a new value of the <see cref="PerLifetimeScope"/> class.
         /// </summary>
         public PerLifetimeScope()
         {
             this.lifetimeScopes = new Dictionary<LifetimeScope, object>();
         }
 
-        public override bool GetInstance(LifetimeScope scope, out object instance)
-        {
-            instance = null;
-
-            if (!this.lifetimeScopes.ContainsKey(scope))
-            {
-                return false;
-            }
-
-            if (this.lifetimeScopes[scope] == null)
-            {
-                return false;
-            }
-
-            instance = this.lifetimeScopes[scope];
-            return true;
-        }
-
-        public override void Resolved(LifetimeScope scope, Type outputType, object instance)
+        public override void GetInstance(LifetimeScope scope, Func<object> factory, out object value)
         {
             if (this.lifetimeScopes.ContainsKey(scope))
             {
-                if (this.lifetimeScopes[scope] != null)
-                {
-                    throw new InvalidOperationException("Invalid scope resolution.");
-                }
+                value = this.lifetimeScopes[scope];
+                return;
+            }
 
-                this.lifetimeScopes[scope] = instance;
-            }
-            else
-            {
-                this.lifetimeScopes.Add(scope, instance);
-            }
+            value = factory();
+            this.lifetimeScopes.Add(scope, value);
         }
     }
 }

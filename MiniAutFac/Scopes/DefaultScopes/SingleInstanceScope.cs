@@ -6,25 +6,15 @@
     {
         private object instance;
 
-        public override bool GetInstance(LifetimeScope scope, out object instance)
+        public override void GetInstance(LifetimeScope scope, Func<object> factory, out object value)
         {
             if (this.instance == null)
             {
-                instance = null;
-                return false;
+                this.instance = value = factory();
+                return;
             }
 
-            instance = this.instance;
-            return true;
-        }
-        public override void Resolved(LifetimeScope scope, Type outputType, object instance)
-        {
-            if (this.instance != null)
-            {
-                throw new InvalidOperationException("Single instance is resolved more than once.");
-            }
-
-            this.instance = instance;
+            value = this.instance;
         }
     }
 }

@@ -31,38 +31,38 @@
         /// Resolves the specified target.
         /// </summary>
         /// <param name="target">The target.</param>
-        /// <param name="scope">The scope.</param>
+        /// <param name="lifetimeScope">The lifetimeScope.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Fata error: List instance doesn't implements IList interface.</exception>
         /// <exception cref="System.NotSupportedException">Not supported yet.</exception>
-        public override object Resolve(Type target, LifetimeScope scope)
+        public override object Resolve(Type target, LifetimeScope lifetimeScope)
         {
             var hiddenType = target.GetGenericArguments()[0];
 
-            var outputList = scope.Container.ActivationEngine(ActivatorDataForList(hiddenType)) as IList;
+            var outputList = lifetimeScope.Container.ActivationEngine(ActivatorDataForList(hiddenType)) as IList;
             if (outputList == null)
             {
                 throw new InvalidOperationException("Fata error: List instance doesn't implements IList interface.");
             }
 
-            if (scope.Container.ResolveImplicit)
+            if (lifetimeScope.Container.ResolveImplicit)
             {
                 throw new NotSupportedException("Not supported yet.");
             }
 
-            var typeContext = scope.Container.TypeContainer[hiddenType];
+            var typeContext = lifetimeScope.Container.TypeContainer[hiddenType];
             foreach (var outputType in typeContext)
             {
-                var scopeResovler = typeContext.Scopes[outputType];
+                var scope = typeContext.Scopes[outputType];
+
                 object instance;
-                if (!scopeResovler.GetInstance(scope, out instance))
-                {
-                    var ctx = scope.Container.TypeContainer[hiddenType];
-                    instance = scope.Container.CreateInstanceRecursive(ctx, outputType);
+                scope.GetInstance(lifetimeScope, () =>
+                                                 {
 
-                    scopeResovler.Resolved(scope, outputType, instance);
-                }
-
+                                                     var ctx = lifetimeScope.Container.TypeContainer[hiddenType];
+                                                     return lifetimeScope.Container.CreateInstanceRecursive(ctx,
+                                                                                                            outputType);
+                                                 }, out instance);
                 outputList.Add(instance);
             }
 
