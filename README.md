@@ -19,6 +19,9 @@ Features
 Releases
 -----------
 
+### 1.2.2
+* Fixed invalid assembly version inside nuget package.
+
 ### 1.2.1
 * Fixed bug when resolving `IEnumerable` regstired per lifetime scope
 
