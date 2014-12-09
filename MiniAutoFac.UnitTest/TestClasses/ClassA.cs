@@ -7,6 +7,11 @@
     {
     }
 
+
+    class FooClass : IFoo
+    {
+
+    }
     interface IFoo
     {
 

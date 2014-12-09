@@ -53,11 +53,13 @@ namespace MiniAutFac
         /// </value>
         public bool ResolveImplicit { get; set; }
 
+        #region Registering
+
         /// <summary>
         /// Registers the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns></returns>
+        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
         public BuilderResolvableItemBase Register(Type type)
         {
             var builderItem = new BuilderResolvableItem(this, type);
@@ -74,6 +76,77 @@ namespace MiniAutFac
         {
             return this.Register(typeof(T));
         }
+
+        /// <summary>
+        /// Registers the specified assemblies.
+        /// </summary>
+        /// <param name="assemblies">The assemblies.</param>
+        public void Register(params Assembly[] assemblies)
+        {
+            var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes());
+            foreach (var type in allTypes)
+            {
+                var attributes = GetContainerTypeAttribute(type);
+                if (attributes == null)
+                {
+                    continue;
+                }
+
+                foreach (var containerType in attributes)
+                {
+                    var builderItem = new BuilderResolvableItem(this, type);
+                    if (containerType.As != null)
+                    {
+                        builderItem.AsType = containerType.As;
+                    }
+
+                    this.typeContainer.Add(builderItem);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers the specified types from assemblies that meets predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="assemblies">The assemblies.</param>
+        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
+        public BuilderResolvableItemBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
+        {
+            var matchingTypes =
+                assemblies.SelectMany(assembly => assembly.GetTypes())
+                          .Where(type => !type.IsInterface && !type.IsAbstract)
+                          .Where(type => predicate(type));
+
+            var resolvable = new BuilderResolvableItem(this, matchingTypes.ToArray());
+            this.typeContainer.Add(resolvable);
+
+            return resolvable;
+        }
+
+        /// <summary>
+        /// Registers the specified types.
+        /// </summary>
+        /// <param name="types">The types.</param>
+        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
+        public BuilderResolvableItemBase Register(params Type[] types)
+        {
+            var resolvable = new BuilderResolvableItem(this, types);
+            this.typeContainer.Add(resolvable);
+
+            return resolvable;
+        }
+
+
+        /// <summary>
+        /// Register all types from calling assembly decorated with attribute ContainerType.
+        /// </summary>
+        public void Register()
+        {
+            this.Register(Assembly.GetCallingAssembly());
+        }
+
+        #endregion
 
         /// <summary>
         /// Builds this instance as IResolvable and check if type collection is correct.
@@ -123,7 +196,7 @@ namespace MiniAutFac
                     foreach (var inType in item.InTypes)
                     {
                         // TODO - key exist
-                        ctx.Scopes.Add(inType, item.Scope);   
+                        ctx.Scopes.Add(inType, item.Scope);
                     }
                 }
 
@@ -137,43 +210,6 @@ namespace MiniAutFac
             ResolveDependencies(resolvable);
 
             return resolvable;
-        }
-
-        /// <summary>
-        /// Registers the specified assemblies.
-        /// </summary>
-        /// <param name="assemblies">The assemblies.</param>
-        public void Register(params Assembly[] assemblies)
-        {
-            var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes());
-            foreach (var type in allTypes)
-            {
-                var attributes = GetContainerTypeAttribute(type);
-                if (attributes == null)
-                {
-                    continue;
-                }
-
-                foreach (var containerType in attributes)
-                {
-                    var builderItem = new BuilderResolvableItem(this, type);
-                    if (containerType.As != null)
-                    {
-                        builderItem.AsType = containerType.As;
-                    }
-
-                    this.typeContainer.Add(builderItem);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Register all types from calling assembly decorated with attribute ContainerType.
-        /// </summary>
-        public void Register()
-        {
-            this.Register(Assembly.GetCallingAssembly());
         }
 
         /// <summary>

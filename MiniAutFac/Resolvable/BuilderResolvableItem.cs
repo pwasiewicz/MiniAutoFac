@@ -25,7 +25,8 @@ namespace MiniAutFac.Resolvable
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="inType">Type of the input.</param>
-        internal BuilderResolvableItem(ContainerBuilder builder, params Type[] inTypes) : base(builder)
+        internal BuilderResolvableItem(ContainerBuilder builder, params Type[] inTypes)
+            : base(builder)
         {
             this.Parameters = new List<Parameter>();
 
@@ -40,7 +41,6 @@ namespace MiniAutFac.Resolvable
         /// <summary>
         /// Determines the output type of registered type with builder.
         /// </summary>
-        /// <typeparam name="T">The output type.</typeparam>
         public override void As(Type type)
         {
             if (this.InTypes.Any(inType => !type.IsAssignableFrom(inType)))
