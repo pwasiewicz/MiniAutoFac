@@ -13,7 +13,6 @@ namespace MiniAutoFac.UnitTest
     using MiniAutFac;
     using MiniAutFac.Exceptions;
     using MiniAutoFac.UnitTest.TestClasses;
-    using MiniAutoFac.UnitTest.TestClasses.SampleNamespace;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;

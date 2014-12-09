@@ -36,7 +36,7 @@ namespace MiniAutFac
         /// Gets or sets the registered type.
         /// </summary>
         /// <value> The type of the input.  </value>
-        internal virtual Type InType { get; set; }
+        internal virtual Type[] InTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the output type.

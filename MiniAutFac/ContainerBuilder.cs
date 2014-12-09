@@ -105,25 +105,26 @@ namespace MiniAutFac
                         .Where(resolvableItem => resolvableItem.AsType != null)
                         .GroupBy(resolvableItem => resolvableItem.AsType))
             {
-                if (builderResolvableItems.Any(type => type.InType.IsInterface) ||
-                    builderResolvableItems.Any(type => type.InType.IsAbstract))
+                if (builderResolvableItems.Any(item => item.InTypes.Any(t => t.IsInterface || t.IsAbstract)))
                 {
                     throw new NotAssignableException();
                 }
 
-                var ctx = new RegisteredTypeContext(builderResolvableItems.Select(item => item.InType).ToList());
-                if ((from item in builderResolvableItems
-                     where item.Parameters.Any()
-                     from parm in item.Parameters
-                     where !ctx.Parameters[item.InType].Add(parm)
-                     select item).Any())
+                var ctx =
+                    new RegisteredTypeContext(
+                        builderResolvableItems.Select(item => item.InTypes).SelectMany(types => types).ToList());
+                if ((from builderResolvableItem in builderResolvableItems where builderResolvableItem.Parameters.Any() from type in builderResolvableItem.InTypes from param in builderResolvableItem.Parameters where !ctx.Parameters[type].Add(param) select type).Any())
                 {
                     throw new InvalidOperationException("Cannot add parameter. The same already registered.");
                 }
 
                 foreach (var item in builderResolvableItems)
                 {
-                    ctx.Scopes.Add(item.InType, item.Scope);
+                    foreach (var inType in item.InTypes)
+                    {
+                        // TODO - key exist
+                        ctx.Scopes.Add(inType, item.Scope);   
+                    }
                 }
 
 

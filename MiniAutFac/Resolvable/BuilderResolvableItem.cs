@@ -9,6 +9,7 @@
 
 namespace MiniAutFac.Resolvable
 {
+    using System.Linq;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Parameters;
     using System;
@@ -24,12 +25,16 @@ namespace MiniAutFac.Resolvable
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="inType">Type of the input.</param>
-        internal BuilderResolvableItem(ContainerBuilder builder, Type inType) : base(builder)
+        internal BuilderResolvableItem(ContainerBuilder builder, params Type[] inTypes) : base(builder)
         {
             this.Parameters = new List<Parameter>();
 
-            this.InType = inType;
-            this.AsType = this.InType;
+            this.InTypes = inTypes;
+
+            if (this.InTypes.Length == 1)
+            {
+                this.AsType = this.InTypes.Single();
+            }
         }
 
         /// <summary>
@@ -38,7 +43,7 @@ namespace MiniAutFac.Resolvable
         /// <typeparam name="T">The output type.</typeparam>
         public override void As(Type type)
         {
-            if (!type.IsAssignableFrom(this.InType))
+            if (this.InTypes.Any(inType => !type.IsAssignableFrom(inType)))
             {
                 throw new NotAssignableException();
             }

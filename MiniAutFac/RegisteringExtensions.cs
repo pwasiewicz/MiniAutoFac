@@ -11,18 +11,21 @@
         /// <returns>The resolvable item builder.</returns>
         public static BuilderResolvableItemBase AsImplementedInterfaces(this BuilderResolvableItemBase resolvableItem)
         {
-            var interfaces = resolvableItem.InType.GetInterfaces();
-            if (!interfaces.Any())
+            foreach (var inType in resolvableItem.InTypes)
             {
-                resolvableItem.AsType = null;
-                return resolvableItem;
-            }
+                var interfaces = inType.GetInterfaces();
+                if (!interfaces.Any())
+                {
+                    resolvableItem.AsType = null;
+                    return resolvableItem;
+                }
 
-            resolvableItem.AsType = interfaces.First();
+                resolvableItem.AsType = interfaces.First();
 
-            foreach (var @interface in interfaces.Skip(1))
-            {
-                resolvableItem.Origin.Register(resolvableItem.InType).As(@interface);
+                foreach (var @interface in interfaces.Skip(1))
+                {
+                    resolvableItem.Origin.Register(inType).As(@interface);
+                }
             }
 
             return resolvableItem;
