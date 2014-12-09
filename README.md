@@ -19,6 +19,9 @@ Features
 Releases
 -----------
 
+### 1.2.1
+* Fixed bug when resolving `IEnumerable` regstired per lifetime scope
+
 ### 1.2
 * Removed registering from namespace (found it useless and not efficient)
 * Registering multiple classes / types chosen with predicate within assemblies
