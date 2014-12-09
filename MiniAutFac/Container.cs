@@ -209,7 +209,7 @@ namespace MiniAutFac
                     foreach (
                         var parameterCtx in declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
                     {
-                        arguments.Add(parameterCtx.GetValue());
+                        arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
                         paramterResolved = true;
                         break;
                     }
