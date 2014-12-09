@@ -68,7 +68,7 @@
             var scope = ctx.Scopes[outputType];
 
             object instance;
-            scope.GetInstance(this, () => this.Container.ResolveInternal(type, this), out instance);
+            scope.GetInstance(this, () => this.Container.ResolveInternal(type, this), outputType, out instance);
             return instance;
         }
 

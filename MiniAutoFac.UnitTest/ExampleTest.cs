@@ -327,5 +327,22 @@ namespace MiniAutoFac.UnitTest
 
             Assert.AreEqual(3, foos.Count());
         }
+
+        [TestMethod]
+        public void ResolvingMultipleTypesWithPredicateAndPerLiftetimeScope()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register(type => typeof(IFoo).IsAssignableFrom(type), Assembly.GetExecutingAssembly())
+               .As<IFoo>()
+               .PerLifetimeScope();
+
+            var container = bld.Build();
+
+            var foos = container.Resolve<IEnumerable<IFoo>>().ToList();
+
+            Assert.AreEqual(3, foos.Count());
+            Assert.AreNotSame(foos[0], foos[1]);
+            Assert.AreNotSame(foos[1], foos[2]);
+        }
     }
 }
