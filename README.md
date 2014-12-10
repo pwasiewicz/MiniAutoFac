@@ -56,14 +56,14 @@ var resolver = builder.Build();
 var fooInstance = resolver.Resolve<Foo>(); // fooInstance.GetType() == typeof(Bar)
 ```
 
-### Registering instance as all implemented interfaces
+### Registering type wth implict registration
 
 ```c#
 public class Foo: IFoo {
 }
 ...
 var builder = new ContainerBuilder() { ResolveImplicit = true };
-builder.Register<Foo>().As<IFoo>();
+builder.Register<Foo>();
 
 var resolver = builder.Build();
 var fooInstance = resolver.Resolve<IFoo>(); // fooInstance.GetType() == typeof(Foo)
