@@ -2,9 +2,23 @@
 {
     using System;
     using MiniAutFac.Parameters.Concrete;
+    using Parameters;
 
     public static class ParametersExtensions
     {
+        /// <summary>
+        /// Withes the parameter.
+        /// </summary>
+        /// <param name="builderResolvableItem">The builder resolvable item.</param>
+        /// <param name="paramter">The paramter.</param>
+        /// <returns></returns>
+        public static BuilderResolvableItemBase WithParameter(this BuilderResolvableItemBase builderResolvableItem,
+                                                              Parameter paramter)
+        {
+            builderResolvableItem.Parameters.Add(paramter);
+            return builderResolvableItem;
+        }
+
         /// <summary>
         /// Withes the named parameter.
         /// </summary>
@@ -21,8 +35,7 @@
                 throw new ArgumentNullException("name");
             }
 
-            builderResolvableItem.Parameters.Add(new NamedParameter(name, value));
-            return builderResolvableItem;
+            return builderResolvableItem.WithParameter(new NamedParameter(name, value));
         }
 
         /// <summary>
@@ -41,8 +54,7 @@
                 throw new ArgumentNullException("name");
             }
 
-            builderResolvableItem.Parameters.Add(new EvalutedParamter(name, instanceFactory));
-            return builderResolvableItem;
+            return builderResolvableItem.WithParameter(new EvalutedParamter(name, instanceFactory));
         }
     }
 }

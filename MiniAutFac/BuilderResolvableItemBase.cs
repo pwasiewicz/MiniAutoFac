@@ -9,11 +9,11 @@
 
 namespace MiniAutFac
 {
-    using System;
-    using System.Collections.Generic;
     using MiniAutFac.Parameters;
     using Scopes;
     using Scopes.DefaultScopes;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The BuilderResolvableItem interface.

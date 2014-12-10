@@ -1,9 +1,22 @@
 ﻿namespace MiniAutFac
 {
+    using Scopes;
     using Scopes.DefaultScopes;
 
     public static class ScopeExtensions
     {
+        /// <summary>
+        /// Withes the scope.
+        /// </summary>
+        /// <param name="resolvable">The resolvable.</param>
+        /// <param name="scope">The scope.</param>
+        /// <returns></returns>
+        public static BuilderResolvableItemBase WithScope(this BuilderResolvableItemBase resolvable, Scope scope)
+        {
+            resolvable.Scope = scope;
+            return resolvable;
+        }
+
         /// <summary>
         /// Default. Every instance request will produce new instance.
         /// </summary>
@@ -11,8 +24,7 @@
         /// <returns>The resolvable builder.</returns>
         public static BuilderResolvableItemBase PerDependency(this BuilderResolvableItemBase resolvable)
         {
-            resolvable.Scope = new PerDependencyScope();
-            return resolvable;
+            return resolvable.WithScope(new PerDependencyScope());
         }
 
         /// <summary>
@@ -22,8 +34,7 @@
         /// <returns>The resolvable builder.</returns>
         public static BuilderResolvableItemBase PerLifetimeScope(this BuilderResolvableItemBase resolvable)
         {
-            resolvable.Scope = new PerLifetimeScope();
-            return resolvable;
+            return resolvable.WithScope(new PerLifetimeScope());
         }
 
         /// <summary>
@@ -33,8 +44,7 @@
         /// <returns>The resolvable builder.</returns>
         public static BuilderResolvableItemBase SingleInstance(this BuilderResolvableItemBase resolvable)
         {
-            resolvable.Scope = new SingleInstanceScope();
-            return resolvable;
+            return resolvable.WithScope(new SingleInstanceScope());
         }
     }
 }

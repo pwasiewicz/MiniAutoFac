@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using MiniAutFac.Exceptions;
 
-    internal class LifetimeScope : ILifetimeScope
+    public class LifetimeScope : ILifetimeScope
     {
         private Container container;
 

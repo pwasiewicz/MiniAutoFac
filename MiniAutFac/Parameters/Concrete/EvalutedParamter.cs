@@ -3,7 +3,7 @@
     using System;
     using System.Reflection;
 
-    internal class EvalutedParamter : Parameter
+    public class EvalutedParamter : Parameter
     {
         /// <summary>
         /// The name
