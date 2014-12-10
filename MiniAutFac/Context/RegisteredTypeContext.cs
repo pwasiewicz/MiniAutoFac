@@ -3,12 +3,14 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using MiniAutFac.Parameters;
+    using Modules;
     using Scopes;
 
     internal class RegisteredTypeContext : IEnumerable<Type>
     {
-        private readonly IEnumerable<Type> types;
+        private readonly HashSet<Type> types;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisteredTypeContext"/> class.
@@ -16,10 +18,15 @@
         /// <param name="types">The types.</param>
         public RegisteredTypeContext(IList<Type> types)
         {
-            this.types = types;
+            this.types = new HashSet<Type>();
+            foreach (var type in types.Where(type => !this.types.Add(type)))
+            {
+                throw new InvalidOperationException("Double type registration. Type: " + type.FullName);
+            }
 
             this.Parameters = new Dictionary<Type, HashSet<Parameter>>();
             this.Scopes = new Dictionary<Type, Scope>();
+            this.Modules = new Dictionary<Type, Module>();
 
             foreach (var type in types)
             {
@@ -39,6 +46,11 @@
         /// The scopes.
         /// </value>
         public Dictionary<Type, Scope> Scopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the modules.
+        /// </summary>
+        public Dictionary<Type, Module> Modules { get; set; }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

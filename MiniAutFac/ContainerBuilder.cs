@@ -9,7 +9,6 @@
 
 namespace MiniAutFac
 {
-    using System.Reflection;
     using MiniAutFac.Attributes;
     using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
@@ -20,6 +19,8 @@ namespace MiniAutFac
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
+    using Module = Modules.Module;
 
     /// <summary>
     /// The container builder.
@@ -32,11 +33,17 @@ namespace MiniAutFac
         private readonly List<BuilderResolvableItem> typeContainer;
 
         /// <summary>
+        /// The modules
+        /// </summary>
+        private readonly HashSet<Module> modules;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
         /// </summary>
         public ContainerBuilder()
         {
             this.typeContainer = new List<BuilderResolvableItem>();
+            this.modules = new HashSet<Module>();
             this.ResolveImplicit = false;
         }
 
@@ -54,6 +61,21 @@ namespace MiniAutFac
         public bool ResolveImplicit { get; set; }
 
         #region Registering
+
+        /// <summary>
+        /// Registers the speicifed module.
+        /// </summary>
+        /// <param name="module">The module instance to register.</param>
+        /// <exception cref="System.ArgumentNullException">module</exception>
+        public void RegisterModule(Module module)
+        {
+            if (module == null)
+            {
+                throw new ArgumentNullException("module");
+            }
+
+            this.modules.Add(module);
+        }
 
         /// <summary>
         /// Registers the specified type.
@@ -154,6 +176,8 @@ namespace MiniAutFac
         /// <returns>IResolvable instance</returns>
         public ILifetimeScope Build()
         {
+            this.ModuleRegistration();
+
             var resolvable = new Container
                                  {
                                      TypeContainer = new Dictionary<Type, RegisteredTypeContext>(),
@@ -186,7 +210,13 @@ namespace MiniAutFac
                 var ctx =
                     new RegisteredTypeContext(
                         builderResolvableItems.Select(item => item.InTypes).SelectMany(types => types).ToList());
-                if ((from builderResolvableItem in builderResolvableItems where builderResolvableItem.Parameters.Any() from type in builderResolvableItem.InTypes from param in builderResolvableItem.Parameters where !ctx.Parameters[type].Add(param) select type).Any())
+
+                if ((from builderResolvableItem in builderResolvableItems
+                     where builderResolvableItem.Parameters.Any()
+                     from type in builderResolvableItem.InTypes
+                     from param in builderResolvableItem.Parameters
+                     where !ctx.Parameters[type].Add(param)
+                     select type).Any())
                 {
                     throw new InvalidOperationException("Cannot add parameter. The same already registered.");
                 }
@@ -195,21 +225,65 @@ namespace MiniAutFac
                 {
                     foreach (var inType in item.InTypes)
                     {
+                        if (item.Module != null)
+                        {
+                            ctx.Modules.Add(inType, item.Module);
+                        }
+
                         // TODO - key exist
                         ctx.Scopes.Add(inType, item.Scope);
                     }
                 }
 
-
                 var pair = new KeyValuePair<Type, RegisteredTypeContext>(builderResolvableItems.Key, ctx);
-
-
                 resolvable.TypeContainer.Add(pair);
             }
 
-            ResolveDependencies(resolvable);
+            CheckForCycles(resolvable);
+
+            GC.Collect();
 
             return resolvable;
+        }
+
+        private void ModuleRegistration()
+        {
+            this.ModuleRegistration(this.modules);
+        }
+
+        /// <summary>
+        /// Registers the modules.
+        /// </summary>
+        /// <param name="modules">The modules.</param>
+        private void ModuleRegistration(IEnumerable<Module> modules)
+        {
+            var childModules = new List<Module>();
+            foreach (var module in modules.Where(module => !module.Registered))
+            {
+                var isolatedBuilder = new ContainerBuilder();
+
+                module.Registration(isolatedBuilder);
+                module.Registered = true;
+
+                foreach (var moduleResolvableItem in isolatedBuilder.typeContainer)
+                {
+                    moduleResolvableItem.Module = module;
+                    module.RegisteredItems.Add(moduleResolvableItem);
+                    this.typeContainer.Add(moduleResolvableItem);
+                }
+
+                if (isolatedBuilder.modules.Any())
+                {
+                    this.ModuleRegistration(isolatedBuilder.modules);
+                }
+
+                childModules.AddRange(isolatedBuilder.modules);
+            }
+
+            foreach (var childModule in childModules)
+            {
+                this.modules.Add(childModule);
+            }
         }
 
         /// <summary>
@@ -229,16 +303,11 @@ namespace MiniAutFac
         /// Resolves dependencies.
         /// </summary>
         /// <param name="resolvable">The instance factory.</param>
-        private static void ResolveDependencies(Container resolvable)
+        private static void CheckForCycles(Container resolvable)
         {
             var graph = new Graph<Type>();
 
-            foreach (var type in resolvable.TypeContainer.Values.SelectMany(types =>
-                                                                            {
-                                                                                var enumerable = types as IList<Type> ??
-                                                                                                 types.ToList();
-                                                                                return enumerable;
-                                                                            }))
+            foreach (var type in resolvable.TypeContainer.Values.SelectMany(types => types.ToList()))
             {
                 var constructors = type.GetConstructors();
                 foreach (

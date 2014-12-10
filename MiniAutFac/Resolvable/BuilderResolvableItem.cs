@@ -9,11 +9,11 @@
 
 namespace MiniAutFac.Resolvable
 {
-    using System.Linq;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Parameters;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// The builder resolvable item.

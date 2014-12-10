@@ -9,7 +9,7 @@
 
 namespace MiniAutoFac.UnitTest
 {
-    using System.Threading;
+    using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -70,6 +70,18 @@ namespace MiniAutoFac.UnitTest
             var resolvedInstance = resolver.Resolve<ClassA>();
 
             Assert.AreEqual(typeof(ClassB), resolvedInstance.GetType());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DoulbeRegistration()
+        {
+            var bld = new ContainerBuilder();
+
+            bld.Register<ClassB>().As<ClassA>();
+            bld.Register<ClassB>().As<ClassA>();
+
+            bld.Build();
         }
 
         /// <summary>
@@ -343,6 +355,31 @@ namespace MiniAutoFac.UnitTest
             Assert.AreEqual(3, foos.Count());
             Assert.AreNotSame(foos[0], foos[1]);
             Assert.AreNotSame(foos[1], foos[2]);
+        }
+
+        [TestMethod]
+        public void RegisteringClassesWithModule()
+        {
+            var bld = new ContainerBuilder();
+            bld.RegisterModule(new SampleModule());
+
+            var aInstance = bld.Build().Resolve<ClassA>();
+
+            Assert.AreEqual(typeof(ClassB), aInstance.GetType());
+        }
+
+        [TestMethod]
+        public void RegisteringEmbeddedhModulse()
+        {
+            var bld = new ContainerBuilder();
+            bld.RegisterModule(new EmbeddingModule());
+
+            var cnt = bld.Build();
+            var aInstance = cnt.Resolve<ClassA>();
+            var fooInstance = cnt.Resolve<IFoo>();
+
+            Assert.AreEqual(typeof(ClassB), aInstance.GetType());
+            Assert.AreEqual(typeof(ClassB), fooInstance.GetType());
         }
     }
 }

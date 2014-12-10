@@ -10,6 +10,7 @@
 namespace MiniAutFac
 {
     using MiniAutFac.Parameters;
+    using Modules;
     using Scopes;
     using Scopes.DefaultScopes;
     using System;
@@ -21,6 +22,7 @@ namespace MiniAutFac
     public abstract class BuilderResolvableItemBase
     {
         internal readonly ContainerBuilder Origin;
+        private Scope scope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BuilderResolvableItemBase"/> class.
@@ -29,7 +31,7 @@ namespace MiniAutFac
         protected BuilderResolvableItemBase(ContainerBuilder origin)
         {
             this.Origin = origin;
-            this.Scope = new PerDependencyScope();
+            this.scope = new PerDependencyScope();
         }
 
         /// <summary>
@@ -52,7 +54,16 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the scope.
         /// </summary>
-        internal virtual Scope Scope { get; set; }
+        internal virtual Scope Scope
+        {
+            get { return this.scope; }
+            set { this.scope = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the module.
+        /// </summary>
+        internal virtual Module Module { get; set; }
 
         /// <summary>
         /// Determines the output type of registered type with builder.
