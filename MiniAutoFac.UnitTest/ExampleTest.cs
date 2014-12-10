@@ -9,6 +9,7 @@
 
 namespace MiniAutoFac.UnitTest
 {
+    using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -312,6 +313,36 @@ namespace MiniAutoFac.UnitTest
             cnt.Dispose();
 
             cnt.Resolve<DisposableClass>();
+        }
+
+        [TestMethod]
+        public void RegisteringTypesWithPredicates()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register(type => typeof(IFoo).IsAssignableFrom(type), Assembly.GetExecutingAssembly()).As<IFoo>();
+
+            var container = bld.Build();
+
+            var foos = container.Resolve<IEnumerable<IFoo>>();
+
+            Assert.AreEqual(3, foos.Count());
+        }
+
+        [TestMethod]
+        public void ResolvingMultipleTypesWithPredicateAndPerLiftetimeScope()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register(type => typeof(IFoo).IsAssignableFrom(type), Assembly.GetExecutingAssembly())
+               .As<IFoo>()
+               .PerLifetimeScope();
+
+            var container = bld.Build();
+
+            var foos = container.Resolve<IEnumerable<IFoo>>().ToList();
+
+            Assert.AreEqual(3, foos.Count());
+            Assert.AreNotSame(foos[0], foos[1]);
+            Assert.AreNotSame(foos[1], foos[2]);
         }
     }
 }

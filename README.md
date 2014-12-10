@@ -19,9 +19,16 @@ Features
 Releases
 -----------
 
-### (future release) 1.2
-* Removed registering from namespace (found it useless and not efficient) (done)
-* Registering multiple classes chosen with predicate within assemblies (in progress)
+### 1.2.2
+* Fixed invalid assembly version inside nuget package.
+
+### 1.2.1
+* Fixed bug when resolving `IEnumerable` regstired per lifetime scope
+
+### 1.2
+* Removed registering from namespace (found it useless and not efficient)
+* Registering multiple classes / types chosen with predicate within assemblies
+* Registering multiple items
 
 ### 1.1
 * First release
@@ -98,6 +105,17 @@ builder.Register<Foo>().AsImplementedInterfaces();
 var cnt = builder.Build();
 var instance = cnt.Resolve<IFoo>();
 ```
+
+### Registering multiple types with one registration
+```c#
+var bld = new ContainerBuilder();
+bld.Register(type => typeof(IFoo).IsAssignableFrom(type), 
+                            Assembly.GetExecutingAssembly()).As<IFoo>();
+
+var container = bld.Build();
+var foos = container.Resolve<IEnumerable<IFoo>>();
+```
+
 ### Lifetime scopes
 
 After building container, you can create many nested lifetime scopes that manages a life cycle of registered instances.

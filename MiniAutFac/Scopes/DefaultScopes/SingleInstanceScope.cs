@@ -1,28 +1,34 @@
 ﻿namespace MiniAutFac.Scopes.DefaultScopes
 {
     using System;
+    using System.Collections.Generic;
 
     internal class SingleInstanceScope : Scope
     {
-        private object instance;
+        private readonly Dictionary<Type, object> instances;
 
         private readonly object lockObject = new object();
 
-        public override void GetInstance(LifetimeScope scope, Func<object> valueFactory, out object value)
+        public SingleInstanceScope()
         {
+            this.instances = new Dictionary<Type, object>();
+        }
 
-            if (this.instance == null)
+        public override void GetInstance(LifetimeScope scope, Func<object> valueFactory, Type valueType, out object value)
+        {
+            object result;
+
+            lock (this.lockObject)
             {
-                lock (this.lockObject)
+                if (!this.instances.TryGetValue(valueType, out result))
                 {
-                    if (this.instance == null)
-                    {
-                        this.instance = valueFactory();
-                    }
+                    var newInstance = valueFactory();
+                    this.instances.Add(valueType, newInstance);
+                    result = newInstance;
                 }
             }
 
-            value = this.instance;
+            value = result;
         }
     }
 }
