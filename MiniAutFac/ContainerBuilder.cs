@@ -14,6 +14,7 @@ namespace MiniAutFac
     using MiniAutFac.Exceptions;
     using MiniAutFac.Helpers;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Parameters;
     using MiniAutFac.Resolvable;
     using MiniAutFac.Resolvers;
     using System;
@@ -30,7 +31,7 @@ namespace MiniAutFac
         /// <summary>
         /// The type container.
         /// </summary>
-        private readonly List<BuilderResolvableItem> typeContainer;
+        private readonly List<ItemRegistration> typeContainer;
 
         /// <summary>
         /// The modules
@@ -42,7 +43,7 @@ namespace MiniAutFac
         /// </summary>
         public ContainerBuilder()
         {
-            this.typeContainer = new List<BuilderResolvableItem>();
+            this.typeContainer = new List<ItemRegistration>();
             this.modules = new HashSet<Module>();
             this.ResolveImplicit = false;
         }
@@ -81,10 +82,10 @@ namespace MiniAutFac
         /// Registers the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
-        public BuilderResolvableItemBase Register(Type type)
+        /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
+        public ItemRegistrationBase Register(Type type)
         {
-            var builderItem = new BuilderResolvableItem(this, type);
+            var builderItem = new ItemRegistration(this, type);
             this.typeContainer.Add(builderItem);
             return builderItem;
         }
@@ -94,7 +95,7 @@ namespace MiniAutFac
         /// </summary>
         /// <typeparam name="T">Type to register</typeparam>
         /// <returns>The IBuilderResolvableItem instance.</returns>
-        public BuilderResolvableItemBase Register<T>()
+        public ItemRegistrationBase Register<T>()
         {
             return this.Register(typeof(T));
         }
@@ -116,7 +117,7 @@ namespace MiniAutFac
 
                 foreach (var containerType in attributes)
                 {
-                    var builderItem = new BuilderResolvableItem(this, type);
+                    var builderItem = new ItemRegistration(this, type);
                     if (containerType.As != null)
                     {
                         builderItem.AsType = containerType.As;
@@ -132,15 +133,15 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <param name="assemblies">The assemblies.</param>
-        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
-        public BuilderResolvableItemBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
+        /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
+        public ItemRegistrationBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
         {
             var matchingTypes =
                 assemblies.SelectMany(assembly => assembly.GetTypes())
                           .Where(type => !type.IsInterface && !type.IsAbstract)
                           .Where(type => predicate(type));
 
-            var resolvable = new BuilderResolvableItem(this, matchingTypes.ToArray());
+            var resolvable = new ItemRegistration(this, matchingTypes.ToArray());
             this.typeContainer.Add(resolvable);
 
             return resolvable;
@@ -150,10 +151,10 @@ namespace MiniAutFac
         /// Registers the specified types.
         /// </summary>
         /// <param name="types">The types.</param>
-        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
-        public BuilderResolvableItemBase Register(params Type[] types)
+        /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
+        public ItemRegistrationBase Register(params Type[] types)
         {
-            var resolvable = new BuilderResolvableItem(this, types);
+            var resolvable = new ItemRegistration(this, types);
             this.typeContainer.Add(resolvable);
 
             return resolvable;
@@ -210,15 +211,36 @@ namespace MiniAutFac
                 var ctx =
                     new RegisteredTypeContext(
                         builderResolvableItems.Select(item => item.InTypes).SelectMany(types => types).ToList());
-
-                if ((from builderResolvableItem in builderResolvableItems
-                     where builderResolvableItem.Parameters.Any()
-                     from type in builderResolvableItem.InTypes
-                     from param in builderResolvableItem.Parameters
-                     where !ctx.Parameters[type].Add(param)
-                     select type).Any())
+                
+                
+                foreach (var builderResolvableItem in builderResolvableItems)
                 {
-                    throw new InvalidOperationException("Cannot add parameter. The same already registered.");
+
+                    if (builderResolvableItem.OwnFactory != null)
+                    {
+                        ctx.OwnFactories = builderResolvableItem.InTypes.ToDictionary(type => type,
+                                                                                      type =>
+                                                                                      builderResolvableItem.OwnFactory);
+                    }
+
+                    foreach (var type in builderResolvableItem.InTypes)
+                    {
+                        foreach (var parameter in builderResolvableItem.Parameters)
+                        {
+                            if (!ctx.Parameters.ContainsKey(type))
+                            {
+                                ctx.Parameters.Add(type, new HashSet<Parameter>(new[] {parameter}));
+                            }
+                            else
+                            {
+                                if (!ctx.Parameters[type].Add(parameter))
+                {
+                                    throw new InvalidOperationException(
+                                        "Cannot add parameter. The same already registered.");
+                                }
+                            }
+                        }
+                    }
                 }
 
                 foreach (var item in builderResolvableItems)
@@ -237,7 +259,7 @@ namespace MiniAutFac
 
                 var pair = new KeyValuePair<Type, RegisteredTypeContext>(builderResolvableItems.Key, ctx);
                 resolvable.TypeContainer.Add(pair);
-            }
+                }
 
             CheckForCycles(resolvable);
 
@@ -270,7 +292,7 @@ namespace MiniAutFac
                     moduleResolvableItem.Module = module;
                     module.RegisteredItems.Add(moduleResolvableItem);
                     this.typeContainer.Add(moduleResolvableItem);
-                }
+            }
 
                 if (isolatedBuilder.modules.Any())
                 {

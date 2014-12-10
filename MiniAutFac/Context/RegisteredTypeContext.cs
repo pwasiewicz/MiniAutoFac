@@ -1,5 +1,7 @@
 ﻿namespace MiniAutFac.Context
 {
+    using MiniAutFac.Parameters;
+    using Scopes;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -25,6 +27,7 @@
             }
 
             this.Parameters = new Dictionary<Type, HashSet<Parameter>>();
+            this.OwnFactories = new Dictionary<Type, Func<object>>();
             this.Scopes = new Dictionary<Type, Scope>();
             this.Modules = new Dictionary<Type, Module>();
 
@@ -51,6 +54,11 @@
         /// Gets or sets the modules.
         /// </summary>
         public Dictionary<Type, Module> Modules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the own factories.
+        /// </summary>
+        public Dictionary<Type, Func<object>> OwnFactories { get; set; } 
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

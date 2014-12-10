@@ -76,7 +76,6 @@ namespace MiniAutFac
                 return instance;
             }
 
-
             var registeredInstancesPair = this.TypeContainer.FirstOrDefault(pair => pair.Key == desiredType);
             if (IsPairValuesNull(registeredInstancesPair))
             {
@@ -100,6 +99,12 @@ namespace MiniAutFac
             }
 
             var outputType = registeredInstancesPair.Value.First();
+
+            if (registeredInstancesPair.Value.OwnFactories.ContainsKey(outputType))
+            {
+                return registeredInstancesPair.Value.OwnFactories[outputType]();
+            }
+
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
@@ -197,21 +202,27 @@ namespace MiniAutFac
             }
 
             arguments.Clear();
+            var outputType = constructorInfo.DeclaringType;
 
             var parameters = constructorInfo.GetParameters().OrderBy(x => x.Position);
-            var declaredParameters = ctx.Parameters[constructorInfo.DeclaringType];
+            var declaredParameters = ctx.Parameters.ContainsKey(outputType) ? ctx.Parameters[outputType] : null;
 
             try
             {
                 foreach (var parameterInfo in parameters)
                 {
                     var paramterResolved = false;
+
+                    if (declaredParameters != null)
+                    {
                     foreach (
-                        var parameterCtx in declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
+                            var parameterCtx in
+                                declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
                     {
                         arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
                         paramterResolved = true;
                         break;
+                    }
                     }
 
                     if (paramterResolved)

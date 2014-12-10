@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BuilderResolvableItem.cs" company="Wasiewcz">
+// <copyright file="ItemRegistration.cs" company="Wasiewcz">
 //   pat.wasiewicz
 // </copyright>
 // <summary>
-//   Defines the BuilderResolvableItem type.
+//   Defines the ItemRegistration type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -18,14 +18,14 @@ namespace MiniAutFac.Resolvable
     /// <summary>
     /// The builder resolvable item.
     /// </summary>
-    internal sealed class BuilderResolvableItem : BuilderResolvableItemBase
+    internal sealed class ItemRegistration : ItemRegistrationBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuilderResolvableItem" /> class.
+        /// Initializes a new instance of the <see cref="ItemRegistration" /> class.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="inType">Type of the input.</param>
-        internal BuilderResolvableItem(ContainerBuilder builder, params Type[] inTypes)
+        internal ItemRegistration(ContainerBuilder builder, params Type[] inTypes)
             : base(builder)
         {
             this.Parameters = new List<Parameter>();

@@ -12,12 +12,12 @@
         /// <summary>
         /// Gets or sets the registered items.
         /// </summary>
-        internal List<BuilderResolvableItemBase> RegisteredItems { get; set; }
+        internal List<ItemRegistrationBase> RegisteredItems { get; set; }
 
         protected Module()
         {
             this.Registered = false;
-            this.RegisteredItems = new List<BuilderResolvableItemBase>();
+            this.RegisteredItems = new List<ItemRegistrationBase>();
         }
 
         /// <summary>

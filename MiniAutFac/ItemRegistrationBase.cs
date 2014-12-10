@@ -17,18 +17,18 @@ namespace MiniAutFac
     using System.Collections.Generic;
 
     /// <summary>
-    /// The BuilderResolvableItem interface.
+    /// The ItemRegistration interface.
     /// </summary>
-    public abstract class BuilderResolvableItemBase
+    public abstract class ItemRegistrationBase
     {
         internal readonly ContainerBuilder Origin;
         private Scope scope;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuilderResolvableItemBase"/> class.
+        /// Initializes a new instance of the <see cref="ItemRegistrationBase"/> class.
         /// </summary>
         /// <param name="origin">The origin.</param>
-        protected BuilderResolvableItemBase(ContainerBuilder origin)
+        protected ItemRegistrationBase(ContainerBuilder origin)
         {
             this.Origin = origin;
             this.scope = new PerDependencyScope();
@@ -50,6 +50,11 @@ namespace MiniAutFac
         /// Gets or sets the parameters.
         /// </summary>
         internal virtual List<Parameter> Parameters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the own factory.
+        /// </summary>
+        internal virtual Func<object> OwnFactory { get; set; } 
 
         /// <summary>
         /// Gets or sets the scope.

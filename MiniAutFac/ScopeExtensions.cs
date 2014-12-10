@@ -11,7 +11,7 @@
         /// <param name="resolvable">The resolvable.</param>
         /// <param name="scope">The scope.</param>
         /// <returns></returns>
-        public static BuilderResolvableItemBase WithScope(this BuilderResolvableItemBase resolvable, Scope scope)
+        public static ItemRegistrationBase WithScope(this ItemRegistrationBase resolvable, Scope scope)
         {
             resolvable.Scope = scope;
             return resolvable;
@@ -22,7 +22,7 @@
         /// </summary>
         /// <param name="resolvable">The resolvable builder.</param>
         /// <returns>The resolvable builder.</returns>
-        public static BuilderResolvableItemBase PerDependency(this BuilderResolvableItemBase resolvable)
+        public static ItemRegistrationBase PerDependency(this ItemRegistrationBase resolvable)
         {
             return resolvable.WithScope(new PerDependencyScope());
         }
@@ -32,7 +32,7 @@
         /// </summary>
         /// <param name="resolvable">The resolvable builder.</param>
         /// <returns>The resolvable builder.</returns>
-        public static BuilderResolvableItemBase PerLifetimeScope(this BuilderResolvableItemBase resolvable)
+        public static ItemRegistrationBase PerLifetimeScope(this ItemRegistrationBase resolvable)
         {
             return resolvable.WithScope(new PerLifetimeScope());
         }
@@ -42,7 +42,7 @@
         /// </summary>
         /// <param name="resolvable">The resolvable builder.</param>
         /// <returns>The resolvable builder.</returns>
-        public static BuilderResolvableItemBase SingleInstance(this BuilderResolvableItemBase resolvable)
+        public static ItemRegistrationBase SingleInstance(this ItemRegistrationBase resolvable)
         {
             return resolvable.WithScope(new SingleInstanceScope());
         }
