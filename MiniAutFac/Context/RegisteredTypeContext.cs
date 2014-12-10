@@ -1,10 +1,10 @@
 ﻿namespace MiniAutFac.Context
 {
+    using MiniAutFac.Parameters;
+    using Scopes;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using MiniAutFac.Parameters;
-    using Scopes;
 
     internal class RegisteredTypeContext : IEnumerable<Type>
     {
@@ -19,12 +19,8 @@
             this.types = types;
 
             this.Parameters = new Dictionary<Type, HashSet<Parameter>>();
+            this.OwnFactories = new Dictionary<Type, Func<object>>();
             this.Scopes = new Dictionary<Type, Scope>();
-
-            foreach (var type in types)
-            {
-                this.Parameters.Add(type, new HashSet<Parameter>());
-            }
         }
 
         /// <summary>
@@ -39,6 +35,11 @@
         /// The scopes.
         /// </value>
         public Dictionary<Type, Scope> Scopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the own factories.
+        /// </summary>
+        public Dictionary<Type, Func<object>> OwnFactories { get; set; } 
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

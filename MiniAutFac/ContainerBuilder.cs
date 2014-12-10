@@ -9,17 +9,18 @@
 
 namespace MiniAutFac
 {
-    using System.Reflection;
     using MiniAutFac.Attributes;
     using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Helpers;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Parameters;
     using MiniAutFac.Resolvable;
     using MiniAutFac.Resolvers;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
 
     /// <summary>
     /// The container builder.
@@ -113,9 +114,36 @@ namespace MiniAutFac
                 var ctx =
                     new RegisteredTypeContext(
                         builderResolvableItems.Select(item => item.InTypes).SelectMany(types => types).ToList());
-                if ((from builderResolvableItem in builderResolvableItems where builderResolvableItem.Parameters.Any() from type in builderResolvableItem.InTypes from param in builderResolvableItem.Parameters where !ctx.Parameters[type].Add(param) select type).Any())
+                
+                
+                foreach (var builderResolvableItem in builderResolvableItems)
                 {
-                    throw new InvalidOperationException("Cannot add parameter. The same already registered.");
+
+                    if (builderResolvableItem.OwnFactory != null)
+                    {
+                        ctx.OwnFactories = builderResolvableItem.InTypes.ToDictionary(type => type,
+                                                                                      type =>
+                                                                                      builderResolvableItem.OwnFactory);
+                    }
+
+                    foreach (var type in builderResolvableItem.InTypes)
+                    {
+                        foreach (var parameter in builderResolvableItem.Parameters)
+                        {
+                            if (!ctx.Parameters.ContainsKey(type))
+                            {
+                                ctx.Parameters.Add(type, new HashSet<Parameter>(new[] {parameter}));
+                            }
+                            else
+                            {
+                                if (!ctx.Parameters[type].Add(parameter))
+                                {
+                                    throw new InvalidOperationException(
+                                        "Cannot add parameter. The same already registered.");
+                                }
+                            }
+                        }
+                    }
                 }
 
                 foreach (var item in builderResolvableItems)

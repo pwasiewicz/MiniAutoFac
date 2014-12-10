@@ -50,6 +50,11 @@ namespace MiniAutFac
         internal virtual List<Parameter> Parameters { get; set; }
 
         /// <summary>
+        /// Gets or sets the own factory.
+        /// </summary>
+        internal virtual Func<object> OwnFactory { get; set; } 
+
+        /// <summary>
         /// Gets or sets the scope.
         /// </summary>
         internal virtual Scope Scope { get; set; }
