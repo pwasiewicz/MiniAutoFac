@@ -78,7 +78,7 @@
     <Compile Include="Exceptions\LifetimeScopeDisposedException.cs" />
     <Compile Include="Parameters\Concrete\EvalutedParamter.cs" />
     <Compile Include="ResolvableExtensions.cs" />
-    <Compile Include="Resolvable\BuilderResolvableItem.cs" />
+    <Compile Include="Resolvable\ItemRegistration.cs" />
     <Compile Include="ContainerBuilder.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Exceptions\CannotResolveTypeException.cs" />
@@ -90,7 +90,7 @@
     <Compile Include="Extensions\ContainerExtensions.cs" />
     <Compile Include="Helpers\Graph.cs" />
     <Compile Include="Context\RegisteredTypeContext.cs" />
-    <Compile Include="BuilderResolvableItemBase.cs" />
+    <Compile Include="ItemRegistrationBase.cs" />
     <Compile Include="Interfaces\IObjectActivatorData.cs" />
     <Compile Include="Interfaces\IResolvable.cs" />
     <Compile Include="ObjectActivatorData.cs" />

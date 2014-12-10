@@ -16,17 +16,17 @@ namespace MiniAutFac
     using System.Collections.Generic;
 
     /// <summary>
-    /// The BuilderResolvableItem interface.
+    /// The ItemRegistration interface.
     /// </summary>
-    public abstract class BuilderResolvableItemBase
+    public abstract class ItemRegistrationBase
     {
         internal readonly ContainerBuilder Origin;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuilderResolvableItemBase"/> class.
+        /// Initializes a new instance of the <see cref="ItemRegistrationBase"/> class.
         /// </summary>
         /// <param name="origin">The origin.</param>
-        protected BuilderResolvableItemBase(ContainerBuilder origin)
+        protected ItemRegistrationBase(ContainerBuilder origin)
         {
             this.Origin = origin;
             this.Scope = new PerDependencyScope();

@@ -30,14 +30,14 @@ namespace MiniAutFac
         /// <summary>
         /// The type container.
         /// </summary>
-        private readonly List<BuilderResolvableItem> typeContainer;
+        private readonly List<ItemRegistration> typeContainer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContainerBuilder" /> class.
         /// </summary>
         public ContainerBuilder()
         {
-            this.typeContainer = new List<BuilderResolvableItem>();
+            this.typeContainer = new List<ItemRegistration>();
             this.ResolveImplicit = false;
         }
 
@@ -60,10 +60,10 @@ namespace MiniAutFac
         /// Registers the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
-        public BuilderResolvableItemBase Register(Type type)
+        /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
+        public ItemRegistrationBase Register(Type type)
         {
-            var builderItem = new BuilderResolvableItem(this, type);
+            var builderItem = new ItemRegistration(this, type);
             this.typeContainer.Add(builderItem);
             return builderItem;
         }
@@ -73,7 +73,7 @@ namespace MiniAutFac
         /// </summary>
         /// <typeparam name="T">Type to register</typeparam>
         /// <returns>The IBuilderResolvableItem instance.</returns>
-        public BuilderResolvableItemBase Register<T>()
+        public ItemRegistrationBase Register<T>()
         {
             return this.Register(typeof(T));
         }
@@ -95,7 +95,7 @@ namespace MiniAutFac
 
                 foreach (var containerType in attributes)
                 {
-                    var builderItem = new BuilderResolvableItem(this, type);
+                    var builderItem = new ItemRegistration(this, type);
                     if (containerType.As != null)
                     {
                         builderItem.AsType = containerType.As;
@@ -111,15 +111,15 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <param name="assemblies">The assemblies.</param>
-        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
-        public BuilderResolvableItemBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
+        /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
+        public ItemRegistrationBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
         {
             var matchingTypes =
                 assemblies.SelectMany(assembly => assembly.GetTypes())
                           .Where(type => !type.IsInterface && !type.IsAbstract)
                           .Where(type => predicate(type));
 
-            var resolvable = new BuilderResolvableItem(this, matchingTypes.ToArray());
+            var resolvable = new ItemRegistration(this, matchingTypes.ToArray());
             this.typeContainer.Add(resolvable);
 
             return resolvable;
@@ -129,10 +129,10 @@ namespace MiniAutFac
         /// Registers the specified types.
         /// </summary>
         /// <param name="types">The types.</param>
-        /// <returns>Instance of BuilderResolvableItemBase that allows to specify additional configuration.</returns>
-        public BuilderResolvableItemBase Register(params Type[] types)
+        /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
+        public ItemRegistrationBase Register(params Type[] types)
         {
-            var resolvable = new BuilderResolvableItem(this, types);
+            var resolvable = new ItemRegistration(this, types);
             this.typeContainer.Add(resolvable);
 
             return resolvable;

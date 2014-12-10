@@ -1,5 +1,6 @@
 ﻿namespace MiniAutFac
 {
+    using System;
     using System.Linq;
 
     public static class RegisteringExtensions
@@ -7,40 +8,66 @@
         /// <summary>
         /// Registers type as all interfaces that it implements.
         /// </summary>
-        /// <param name="resolvableItem">The resolvable item builder.</param>
+        /// <param name="resolvableItemRegistration">The resolvable item builder.</param>
         /// <returns>The resolvable item builder.</returns>
-        public static BuilderResolvableItemBase AsImplementedInterfaces(this BuilderResolvableItemBase resolvableItem)
+        public static ItemRegistrationBase AsImplementedInterfaces(this ItemRegistrationBase resolvableItemRegistration)
         {
-            foreach (var inType in resolvableItem.InTypes)
+            foreach (var inType in resolvableItemRegistration.InTypes)
             {
                 var interfaces = inType.GetInterfaces();
                 if (!interfaces.Any())
                 {
-                    resolvableItem.AsType = null;
-                    return resolvableItem;
+                    resolvableItemRegistration.AsType = null;
+                    return resolvableItemRegistration;
                 }
 
-                resolvableItem.AsType = interfaces.First();
+                resolvableItemRegistration.AsType = interfaces.First();
 
                 foreach (var @interface in interfaces.Skip(1))
                 {
-                    resolvableItem.Origin.Register(inType).As(@interface);
+                    resolvableItemRegistration.Origin.Register(inType).As(@interface);
                 }
             }
 
-            return resolvableItem;
+            return resolvableItemRegistration;
         }
 
         /// <summary>
         /// Registers type as generic argument.
         /// </summary>
         /// <typeparam name="T">The type, that type should be registered as.</typeparam>
-        /// <param name="resolvableItemBase">The resolvable item base.</param>
+        /// <param name="resolvableItemRegistrationBase">The resolvable item base.</param>
         /// <returns>The resolvable item base.</returns>
-        public static BuilderResolvableItemBase As<T>(this BuilderResolvableItemBase resolvableItemBase)
+        public static ItemRegistrationBase As<T>(this ItemRegistrationBase resolvableItemRegistrationBase)
         {
-            resolvableItemBase.As(typeof(T));
-            return resolvableItemBase;
+            resolvableItemRegistrationBase.As(typeof(T));
+            return resolvableItemRegistrationBase;
+        }
+
+        /// <summary>
+        /// Adds function that creates instances of registered type.
+        /// </summary>
+        /// <param name="resolvableItemRegistrationBase">The resolvable item base.</param>
+        /// <param name="instanceFactory">The instance factory.</param>
+        /// <returns>Type registration base.</returns>
+        public static ItemRegistrationBase As(this ItemRegistrationBase resolvableItemRegistrationBase,
+                                                   Func<object> instanceFactory)
+        {
+            resolvableItemRegistrationBase.OwnFactory = instanceFactory;
+            return resolvableItemRegistrationBase;
+        }
+
+        /// <summary>
+        ///  Adds the instane of registered type that will be used when resolving.
+        /// </summary>
+        /// <param name="resolvableItemRegistrationBase">The resolvable item registration base.</param>
+        /// <param name="instanceFactory">The instance factory.</param>
+        /// <returns></returns>
+        public static ItemRegistrationBase As(this ItemRegistrationBase resolvableItemRegistrationBase,
+                                           object instanceFactory)
+        {
+            resolvableItemRegistrationBase.OwnFactory = () => instanceFactory;
+            return resolvableItemRegistrationBase;
         }
     }
 }

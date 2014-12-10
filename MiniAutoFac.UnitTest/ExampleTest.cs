@@ -344,5 +344,54 @@ namespace MiniAutoFac.UnitTest
             Assert.AreNotSame(foos[0], foos[1]);
             Assert.AreNotSame(foos[1], foos[2]);
         }
+
+        [TestMethod]
+        public void RegisteringConcreteInstance()
+        {
+            var instanceB = new ClassB();
+
+            var bld = new ContainerBuilder();
+            bld.Register<ClassA>().As(instanceB).PerDependency();
+
+            using (var cnt = bld.Build())
+            {
+                var mainB = cnt.Resolve<ClassA>();
+                ClassA nestedB;
+
+                using (var scope = cnt.BeginLifetimeScope())
+                {
+                    nestedB = scope.Resolve<ClassA>();
+                }
+
+                Assert.AreSame(instanceB, mainB);
+                Assert.AreSame(instanceB, nestedB);
+            }
+        }
+
+        [TestMethod]
+        public void RegisteringFactoryOfInstance()
+        {
+            var called = 0;
+
+            var bld = new ContainerBuilder();
+            bld.Register<ClassA>().As(() =>
+                                      {
+                                          called += 1;
+                                          return new ClassB();
+                                      }).PerLifetimeScope();
+
+            using (var cnt = bld.Build())
+            {
+                cnt.Resolve<ClassA>();
+                cnt.Resolve<ClassA>();
+
+                using (var scope = cnt.BeginLifetimeScope())
+                {
+                    scope.Resolve<ClassA>();
+                }
+            }
+
+            Assert.AreEqual(2, called);
+        }
     }
 }
