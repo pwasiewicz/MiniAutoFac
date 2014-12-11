@@ -1,10 +1,10 @@
 ﻿namespace MiniAutFac.Scopes
 {
-    using System.Linq;
     using Interfaces;
+    using MiniAutFac.Exceptions;
     using System;
     using System.Collections.Generic;
-    using MiniAutFac.Exceptions;
+    using System.Linq;
 
     public class LifetimeScope : ILifetimeScope
     {

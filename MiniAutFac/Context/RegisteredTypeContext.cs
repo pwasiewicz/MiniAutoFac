@@ -1,17 +1,18 @@
 ﻿namespace MiniAutFac.Context
 {
     using MiniAutFac.Parameters;
+    using Modules;
     using Scopes;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using MiniAutFac.Parameters;
-    using Modules;
-    using Scopes;
 
     internal class RegisteredTypeContext : IEnumerable<Type>
     {
+        /// <summary>
+        /// The types
+        /// </summary>
         private readonly HashSet<Type> types;
 
         /// <summary>
@@ -58,7 +59,7 @@
         /// <summary>
         /// Gets or sets the own factories.
         /// </summary>
-        public Dictionary<Type, Func<object>> OwnFactories { get; set; } 
+        public Dictionary<Type, Func<object>> OwnFactories { get; set; }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
