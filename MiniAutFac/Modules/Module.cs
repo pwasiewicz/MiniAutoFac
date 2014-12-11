@@ -1,5 +1,6 @@
 ﻿namespace MiniAutFac.Modules
 {
+    using System;
     using System.Collections.Generic;
 
     public abstract class Module
@@ -25,6 +26,24 @@
         /// </summary>
         /// <param name="builder">The container builder.</param>
         public virtual void Registration(ContainerBuilder builder)
+        {
+        }
+
+        /// <summary>
+        /// Registereds the instance activated.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="instance">The instance.</param>
+        public virtual void RegisteredInstanceActivated(Type type, object instance)
+        {
+        }
+
+        /// <summary>
+        /// Instances the activated.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="instance">The instance.</param>
+        public virtual void InstanceActivated(Type type, object instance)
         {
         }
     }

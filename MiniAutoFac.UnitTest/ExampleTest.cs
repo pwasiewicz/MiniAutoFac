@@ -10,6 +10,7 @@
 namespace MiniAutoFac.UnitTest
 {
     using System;
+    using System.Diagnostics;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -429,6 +430,18 @@ namespace MiniAutoFac.UnitTest
 
             Assert.AreEqual(typeof(ClassB), aInstance.GetType());
             Assert.AreEqual(typeof(ClassB), fooInstance.GetType());
+        }
+
+        [TestMethod]
+        public void ModuleActivationListener()
+        {
+            var bld = new ContainerBuilder();
+            bld.RegisterModule(new ModuleWithRegisteredInstanceListener());
+            var cnt = bld.Build();
+
+            var instance = cnt.Resolve<ActivableClass>();
+
+            Assert.IsTrue(instance.Activated);
         }
     }
 }

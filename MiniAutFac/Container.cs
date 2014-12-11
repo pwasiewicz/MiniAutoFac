@@ -18,6 +18,7 @@ namespace MiniAutFac
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using Module = Modules.Module;
 
     /// <summary>
     /// The default container - instance factory.
@@ -40,6 +41,11 @@ namespace MiniAutFac
         /// Gets or sets the type container.
         /// </summary>
         internal IDictionary<Type, RegisteredTypeContext> TypeContainer { get; set; }
+
+        /// <summary>
+        /// Gets or sets all modules.
+        /// </summary>
+        internal IEnumerable<Module> AllModules { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether resolve implicit.
@@ -148,14 +154,27 @@ namespace MiniAutFac
                 throw new NotAssignableException();
             }
 
-            return
+            var instance =
                 this.ActivationEngine(
-                    new ObjectActivatorData
-                    {
-                        ResolvedType = target,
-                        ConstructorInfo = ctor,
-                        ConstructorArguments = constructorArguments
-                    });
+                                      new ObjectActivatorData
+                                      {
+                                          ResolvedType = target,
+                                          ConstructorInfo = ctor,
+                                          ConstructorArguments = constructorArguments
+                                      });
+
+            var moduleForType = ctx.Modules.ContainsKey(target) ? ctx.Modules[target] : null;
+
+            foreach (var module in this.AllModules)
+            {
+                module.InstanceActivated(target, instance);
+                if (moduleForType != null && moduleForType == module)
+                {
+                    module.RegisteredInstanceActivated(target, instance);
+                }
+            }
+
+            return instance;
         }
 
         /// <summary>

@@ -180,10 +180,11 @@ namespace MiniAutFac
             this.ModuleRegistration();
 
             var resolvable = new Container
-                                 {
-                                     TypeContainer = new Dictionary<Type, RegisteredTypeContext>(),
-                                     ResolveImplicit = this.ResolveImplicit
-                                 };
+                             {
+                                 TypeContainer = new Dictionary<Type, RegisteredTypeContext>(),
+                                 ResolveImplicit = this.ResolveImplicit,
+                                 AllModules = this.modules.ToList()
+                             };
 
             resolvable.RegisterResolver(cnt => new EnumerableResolver());
 
@@ -211,8 +212,8 @@ namespace MiniAutFac
                 var ctx =
                     new RegisteredTypeContext(
                         builderResolvableItems.Select(item => item.InTypes).SelectMany(types => types).ToList());
-                
-                
+
+
                 foreach (var builderResolvableItem in builderResolvableItems)
                 {
 
@@ -229,12 +230,12 @@ namespace MiniAutFac
                         {
                             if (!ctx.Parameters.ContainsKey(type))
                             {
-                                ctx.Parameters.Add(type, new HashSet<Parameter>(new[] {parameter}));
+                                ctx.Parameters.Add(type, new HashSet<Parameter>(new[] { parameter }));
                             }
                             else
                             {
                                 if (!ctx.Parameters[type].Add(parameter))
-                {
+                                {
                                     throw new InvalidOperationException(
                                         "Cannot add parameter. The same already registered.");
                                 }
@@ -259,7 +260,7 @@ namespace MiniAutFac
 
                 var pair = new KeyValuePair<Type, RegisteredTypeContext>(builderResolvableItems.Key, ctx);
                 resolvable.TypeContainer.Add(pair);
-                }
+            }
 
             CheckForCycles(resolvable);
 
@@ -292,7 +293,7 @@ namespace MiniAutFac
                     moduleResolvableItem.Module = module;
                     module.RegisteredItems.Add(moduleResolvableItem);
                     this.typeContainer.Add(moduleResolvableItem);
-            }
+                }
 
                 if (isolatedBuilder.modules.Any())
                 {
