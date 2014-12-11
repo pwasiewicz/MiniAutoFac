@@ -99,12 +99,6 @@ namespace MiniAutFac
             }
 
             var outputType = registeredInstancesPair.Value.First();
-
-            if (registeredInstancesPair.Value.OwnFactories.ContainsKey(outputType))
-            {
-                return registeredInstancesPair.Value.OwnFactories[outputType]();
-            }
-
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
@@ -124,6 +118,11 @@ namespace MiniAutFac
         /// <exception cref="NotAssignableException"></exception>
         internal object CreateInstanceRecursive(RegisteredTypeContext ctx, Type target)
         {
+            if (ctx.OwnFactories.ContainsKey(target))
+            {
+                return ctx.OwnFactories[target]();
+            }
+
             LinkedList<object> constructorArguments = null;
 
             var constructors = target.GetConstructors();
@@ -215,14 +214,14 @@ namespace MiniAutFac
 
                     if (declaredParameters != null)
                     {
-                    foreach (
-                            var parameterCtx in
-                                declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
-                    {
-                        arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
-                        paramterResolved = true;
-                        break;
-                    }
+                        foreach (
+                                var parameterCtx in
+                                    declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
+                        {
+                            arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
+                            paramterResolved = true;
+                            break;
+                        }
                     }
 
                     if (paramterResolved)
