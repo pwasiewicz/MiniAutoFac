@@ -19,6 +19,11 @@ Features
 Releases
 -----------
 
+### 1.3.0
+* Parameters (named and evaluted paramteres)
+* Registering own instance factory for type
+* Simple modules (in progress) 
+
 ### 1.2.2
 * Fixed invalid assembly version inside nuget package.
 
