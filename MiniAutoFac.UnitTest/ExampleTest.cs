@@ -9,7 +9,6 @@
 
 namespace MiniAutoFac.UnitTest
 {
-    using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -38,6 +37,18 @@ namespace MiniAutoFac.UnitTest
 
             Assert.AreEqual(bInst.Test, 2);
             Assert.AreEqual(bInst.ClassA.Test, "A");
+        }
+
+        [TestMethod]
+        public void ResolvingEvalutedParameter()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<ClassThatLogs>()
+                   .WithEvalutedParamter("logger", requestingType => new SampleLogger(requestingType));
+
+            var instance = builder.Build().BeginLifetimeScope().Resolve<ClassThatLogs>();
+
+            Assert.AreEqual(typeof(ClassThatLogs), instance.GetLoggedType);
         }
 
         /// <summary>
