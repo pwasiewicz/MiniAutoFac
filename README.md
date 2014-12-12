@@ -19,6 +19,11 @@ Features
 Releases
 -----------
 
+### 1.3.0
+* Parameters (named and evaluted paramteres)
+* Registering own instance factory for type
+* Simple modules (in progress) 
+
 ### 1.2.2
 * Fixed invalid assembly version inside nuget package.
 
@@ -144,4 +149,32 @@ Possible scopes so far:
 * `SingleInstance` - single instance per container (shared among all nested lifetime scopes)
 * `PerDependency` - instance created every `Resolve` request
 * `PerLifetimeScope` - instance shared among single lifetime scope
+* 
 
+### Named paramter
+You can tells the resolvable to to apply own buult instance as parameter, when resolving:
+
+```#
+public class Foo
+{
+    public Foo(string parameter1) 
+    {
+       // ..
+    }
+}
+
+var builder = new ContainerBuilder();
+builder.Register<Foo>()
+       .WithNamedParameter("paramter1", "value");
+var cnt = builder.Build();
+var fooInst = cnt.Resolve<Foo>();
+```
+
+### Evaluated parameter
+You can create own instance factory for paramter:
+
+```#
+var builder = new ContainerBuilder();
+builder.Register<Foo>().WithEvalutedParameter("logger", requesingType => new Logger(requestingType));
+var foo = builder.Build().Resolve<Foo>();
+```
