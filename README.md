@@ -19,7 +19,7 @@ Features
 Releases
 -----------
 
-### 1.3.0
+### 1.3.0 (future)
 * Parameters (named and evaluted paramteres)
 * Registering own instance factory for type
 * Simple modules (in progress) 
