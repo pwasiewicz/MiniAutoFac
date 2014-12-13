@@ -69,6 +69,7 @@
     <Compile Include="TestClasses\ClassB.cs" />
     <Compile Include="TestClasses\ClassV.cs" />
     <Compile Include="TestClasses\InterfaceForClassB.cs" />
+    <Compile Include="TestClasses\SampleLogger.cs" />
     <Compile Include="TestClasses\SampleNamespace\Class3.cs" />
   </ItemGroup>
   <ItemGroup />

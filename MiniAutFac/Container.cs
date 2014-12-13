@@ -136,6 +136,11 @@ namespace MiniAutFac
         /// <exception cref="NotAssignableException"></exception>
         internal object CreateInstanceRecursive(RegisteredTypeContext ctx, Type target)
         {
+            if (ctx.OwnFactories.ContainsKey(target))
+            {
+                return ctx.OwnFactories[target]();
+            }
+
             LinkedList<object> constructorArguments = null;
 
             var constructors = target.GetConstructors();
