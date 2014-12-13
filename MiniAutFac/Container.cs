@@ -107,38 +107,34 @@ namespace MiniAutFac
 
             var outputType = registeredInstancesPair.Value.First();
 
-            if (registeredInstancesPair.Value.OwnFactories.ContainsKey(outputType))
-            {
-                return registeredInstancesPair.Value.OwnFactories[outputType](new ActivationContext
-                                                                              {
-                                                                                  ActivatedType = outputType,
-                                                                                  CurrentLifetimeScope = scope,
-                                                                                  RequestingType = requestingType
-                                                                              });
-            }
-
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
             }
 
-            var resolvedInstance = this.CreateInstanceRecursive(registeredInstancesPair.Value, outputType);
-            scope.ScopeAllInstances.Add(resolvedInstance);
-            return resolvedInstance;
+            return this.CreateInstanceRecursive(scope, registeredInstancesPair.Value, outputType,
+                                                requestingType);
         }
 
         /// <summary>
         /// Creates the instance recursive.
         /// </summary>
+        /// <param name="scope">The scope.</param>
         /// <param name="ctx">The CTX.</param>
         /// <param name="target">The target.</param>
+        /// <param name="requestingType">Type of the requesting.</param>
         /// <returns></returns>
         /// <exception cref="NotAssignableException"></exception>
-        internal object CreateInstanceRecursive(RegisteredTypeContext ctx, Type target)
+        internal object CreateInstanceRecursive(LifetimeScope scope, RegisteredTypeContext ctx, Type target, Type requestingType = null)
         {
             if (ctx.OwnFactories.ContainsKey(target))
             {
-                return ctx.OwnFactories[target]();
+                return ctx.OwnFactories[target](new ActivationContext
+                {
+                    ActivatedType = target,
+                    CurrentLifetimeScope = scope,
+                    RequestingType = requestingType
+                });
             }
 
             LinkedList<object> constructorArguments = null;
@@ -166,7 +162,7 @@ namespace MiniAutFac
                 throw new NotAssignableException();
             }
 
-            return
+            var newInstance = 
                 this.ActivationEngine(
                     new ObjectActivatorData
                     {
@@ -174,6 +170,10 @@ namespace MiniAutFac
                         ConstructorInfo = ctor,
                         ConstructorArguments = constructorArguments
                     });
+
+            scope.ScopeAllInstances.Add(newInstance);
+
+            return newInstance;
         }
 
         /// <summary>
