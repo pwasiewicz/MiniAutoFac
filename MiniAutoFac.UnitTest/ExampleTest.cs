@@ -9,7 +9,6 @@
 
 namespace MiniAutoFac.UnitTest
 {
-    using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -374,7 +373,7 @@ namespace MiniAutoFac.UnitTest
             var called = 0;
 
             var bld = new ContainerBuilder();
-            bld.Register<ClassA>().As(() =>
+            bld.Register<ClassA>().As(ctx =>
                                       {
                                           called += 1;
                                           return new ClassB();

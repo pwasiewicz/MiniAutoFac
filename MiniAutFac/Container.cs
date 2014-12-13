@@ -58,8 +58,15 @@ namespace MiniAutFac
         /// Resolves the instance of type T.
         /// </summary>
         /// <param name="type">The type to resolve.</param>
-        /// <returns> New instance of type T. </returns>
-        public object ResolveInternal(Type type, LifetimeScope scope)
+        /// <param name="scope">The scope.</param>
+        /// <param name="requestingType">Type of the requesting.</param>
+        /// <returns>
+        /// New instance of type T.
+        /// </returns>
+        /// <exception cref="TypeRepositoryEmptyException"></exception>
+        /// <exception cref="CannotResolveTypeException">
+        /// </exception>
+        public object ResolveInternal(Type type, LifetimeScope scope, Type requestingType = null)
         {
             if (this.TypeContainer == null)
             {
@@ -102,7 +109,12 @@ namespace MiniAutFac
 
             if (registeredInstancesPair.Value.OwnFactories.ContainsKey(outputType))
             {
-                return registeredInstancesPair.Value.OwnFactories[outputType]();
+                return registeredInstancesPair.Value.OwnFactories[outputType](new ActivationContext
+                                                                              {
+                                                                                  ActivatedType = outputType,
+                                                                                  CurrentLifetimeScope = scope,
+                                                                                  RequestingType = requestingType
+                                                                              });
             }
 
             if (!desiredType.IsAssignableFrom(outputType))
@@ -230,7 +242,7 @@ namespace MiniAutFac
                         continue;
                     }
 
-                    var parameterInstance = this.Resolve(parameterInfo.ParameterType);
+                    var parameterInstance = this.Resolve(parameterInfo.ParameterType, outputType);
                     arguments.Add(parameterInstance);
                 }
 

@@ -52,6 +52,11 @@
 
         public virtual object Resolve(Type type)
         {
+            return Resolve(type, requestingType: null);
+        }
+
+        internal virtual object Resolve(Type type, Type requestingType)
+        {
             if (this.disposed)
             {
                 throw new LifetimeScopeDisposedException();

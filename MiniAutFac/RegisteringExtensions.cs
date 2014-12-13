@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using MiniAutFac.Context;
 
     public static class RegisteringExtensions
     {
@@ -51,7 +52,7 @@
         /// <param name="instanceFactory">The instance factory.</param>
         /// <returns>Type registration base.</returns>
         public static ItemRegistrationBase As(this ItemRegistrationBase resolvableItemRegistrationBase,
-                                                   Func<object> instanceFactory)
+                                                   Func<ActivationContext, object> instanceFactory)
         {
             resolvableItemRegistrationBase.OwnFactory = instanceFactory;
             return resolvableItemRegistrationBase;
@@ -66,7 +67,7 @@
         public static ItemRegistrationBase As(this ItemRegistrationBase resolvableItemRegistrationBase,
                                            object instanceFactory)
         {
-            resolvableItemRegistrationBase.OwnFactory = () => instanceFactory;
+            resolvableItemRegistrationBase.OwnFactory = ctx => instanceFactory;
             return resolvableItemRegistrationBase;
         }
     }
