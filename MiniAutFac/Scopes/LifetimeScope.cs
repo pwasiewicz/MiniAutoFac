@@ -79,6 +79,11 @@
 
         public virtual void Dispose()
         {
+            if (disposed)
+            {
+                throw new InvalidOperationException("Lifetime scope has already been disposed.");
+            }
+
             foreach (var childScope in this.ChildScopes)
             {
                 childScope.Dispose();
