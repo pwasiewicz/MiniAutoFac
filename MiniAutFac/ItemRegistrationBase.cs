@@ -9,6 +9,7 @@
 
 namespace MiniAutFac
 {
+    using MiniAutFac.Context;
     using MiniAutFac.Parameters;
     using Modules;
     using Scopes;
@@ -54,7 +55,7 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the own factory.
         /// </summary>
-        internal virtual Func<object> OwnFactory { get; set; } 
+        internal virtual Func<ActivationContext, object> OwnFactory { get; set; } 
 
         /// <summary>
         /// Gets or sets the scope.

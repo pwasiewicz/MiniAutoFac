@@ -28,7 +28,7 @@
             }
 
             this.Parameters = new Dictionary<Type, HashSet<Parameter>>();
-            this.OwnFactories = new Dictionary<Type, Func<object>>();
+            this.OwnFactories = new Dictionary<Type, Func<ActivationContext, object>>();
             this.Scopes = new Dictionary<Type, Scope>();
             this.Modules = new Dictionary<Type, Module>();
 
@@ -59,7 +59,7 @@
         /// <summary>
         /// Gets or sets the own factories.
         /// </summary>
-        public Dictionary<Type, Func<object>> OwnFactories { get; set; }
+        public Dictionary<Type, Func<ActivationContext, object>> OwnFactories { get; set; } 
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

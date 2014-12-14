@@ -14,6 +14,7 @@ namespace MiniAutoFac.UnitTest
     using MiniAutFac.Exceptions;
     using MiniAutoFac.UnitTest.TestClasses;
     using System;
+    using MiniAutoFac.UnitTest.TestClasses.EnumerableBug;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -398,7 +399,7 @@ namespace MiniAutoFac.UnitTest
             var called = 0;
 
             var bld = new ContainerBuilder();
-            bld.Register<ClassA>().As(() =>
+            bld.Register<ClassA>().As(ctx =>
                                       {
                                           called += 1;
                                           return new ClassB();
@@ -416,6 +417,23 @@ namespace MiniAutoFac.UnitTest
             }
 
             Assert.AreEqual(2, called);
+        }
+
+        [TestMethod]
+        public void SomeDisposableWithinhInsideContext()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<SomeContext>().PerLifetimeScope();
+            builder.Register<SomeDisposable>().PerLifetimeScope();
+
+            SomeContext ctx;
+
+            using (var scope = builder.Build().BeginLifetimeScope())
+            {
+                ctx = scope.Resolve<SomeContext>();
+            }
+
+            Assert.IsTrue(ctx.Disposables.First().Disposed);
         }
 
         [TestMethod]

@@ -19,7 +19,7 @@ Features
 Releases
 -----------
 
-### 1.3.0
+### 1.3.0 (future)
 * Parameters (named and evaluted paramteres)
 * Registering own instance factory for type
 * Simple modules (in progress) 
@@ -154,12 +154,11 @@ Possible scopes so far:
 ### Named paramter
 You can tells the resolvable to to apply own buult instance as parameter, when resolving:
 
-```#
+```c#
 public class Foo
 {
     public Foo(string parameter1) 
     {
-       // ..
     }
 }
 
@@ -173,8 +172,10 @@ var fooInst = cnt.Resolve<Foo>();
 ### Evaluated parameter
 You can create own instance factory for paramter:
 
-```#
+```c#
 var builder = new ContainerBuilder();
-builder.Register<Foo>().WithEvalutedParameter("logger", requesingType => new Logger(requestingType));
+builder.Register<Foo>().WithEvalutedParameter(
+                           "logger", 
+                           requesingType => new Logger(requestingType));
 var foo = builder.Build().Resolve<Foo>();
 ```

@@ -64,8 +64,15 @@ namespace MiniAutFac
         /// Resolves the instance of type T.
         /// </summary>
         /// <param name="type">The type to resolve.</param>
-        /// <returns> New instance of type T. </returns>
-        public object ResolveInternal(Type type, LifetimeScope scope)
+        /// <param name="lifetimeScope">The liftime scope.</param>
+        /// <param name="requestingType">Type of the requesting.</param>
+        /// <returns>
+        /// New instance of type T.
+        /// </returns>
+        /// <exception cref="TypeRepositoryEmptyException"></exception>
+        /// <exception cref="CannotResolveTypeException">
+        /// </exception>
+        public object ResolveInternal(Type type, LifetimeScope lifetimeScope, Type requestingType = null)
         {
             if (this.TypeContainer == null)
             {
@@ -75,10 +82,10 @@ namespace MiniAutFac
             var desiredType = type;
             foreach (
                 var instance in
-                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type, scope))
-                        .Select(additionalResolver => additionalResolver.Resolve(desiredType, scope)))
+                    this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type, lifetimeScope))
+                        .Select(additionalResolver => additionalResolver.Resolve(desiredType, lifetimeScope)))
             {
-                scope.ScopeAllInstances.Add(instance);
+                lifetimeScope.ScopeAllInstances.Add(instance);
                 return instance;
             }
 
@@ -105,28 +112,35 @@ namespace MiniAutFac
             }
 
             var outputType = registeredInstancesPair.Value.First();
+
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
             }
 
-            var resolvedInstance = this.CreateInstanceRecursive(registeredInstancesPair.Value, outputType);
-            scope.ScopeAllInstances.Add(resolvedInstance);
-            return resolvedInstance;
+            return this.CreateInstanceRecursive(lifetimeScope, registeredInstancesPair.Value, outputType,
+                                                requestingType);
         }
 
         /// <summary>
         /// Creates the instance recursive.
         /// </summary>
+        /// <param name="scope">The scope.</param>
         /// <param name="ctx">The CTX.</param>
         /// <param name="target">The target.</param>
+        /// <param name="requestingType">Type of the requesting.</param>
         /// <returns></returns>
         /// <exception cref="NotAssignableException"></exception>
-        internal object CreateInstanceRecursive(RegisteredTypeContext ctx, Type target)
+        internal object CreateInstanceRecursive(LifetimeScope scope, RegisteredTypeContext ctx, Type target, Type requestingType = null)
         {
             if (ctx.OwnFactories.ContainsKey(target))
             {
-                return ctx.OwnFactories[target]();
+                return ctx.OwnFactories[target](new ActivationContext
+                {
+                    ActivatedType = target,
+                    CurrentLifetimeScope = scope,
+                    RequestingType = requestingType
+                });
             }
 
             LinkedList<object> constructorArguments = null;
@@ -138,7 +152,7 @@ namespace MiniAutFac
                 foreach (var constructorInfo in constructors)
                 {
                     var parametersInsance = new LinkedList<object>();
-                    if (!this.ResolveConstructorParameters(ctx, constructorInfo, parametersInsance))
+                    if (!this.ResolveConstructorParameters(scope, ctx, constructorInfo, parametersInsance))
                     {
                         continue;
                     }
@@ -156,12 +170,12 @@ namespace MiniAutFac
 
             var instance =
                 this.ActivationEngine(
-                                      new ObjectActivatorData
-                                      {
-                                          ResolvedType = target,
-                                          ConstructorInfo = ctor,
-                                          ConstructorArguments = constructorArguments
-                                      });
+                    new ObjectActivatorData
+                    {
+                        ResolvedType = target,
+                        ConstructorInfo = ctor,
+                        ConstructorArguments = constructorArguments
+                    });
 
             var moduleForType = ctx.Modules.ContainsKey(target) ? ctx.Modules[target] : null;
 
@@ -173,6 +187,8 @@ namespace MiniAutFac
                     module.RegisteredInstanceActivated(target, instance);
                 }
             }
+
+            scope.ScopeAllInstances.Add(instance);
 
             return instance;
         }
@@ -203,11 +219,19 @@ namespace MiniAutFac
         /// <summary>
         /// Resolves the constructor parameters.
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="lifetimeScope">The lifetime scope.</param>
+        /// <param name="ctx">The CTX.</param>
         /// <param name="constructorInfo">The constructor ctx.</param>
         /// <param name="arguments">The arguments.</param>
-        /// <returns>True, if resolving constructor parameters succeed.</returns>
-        private bool ResolveConstructorParameters(RegisteredTypeContext ctx, MethodBase constructorInfo, ICollection<object> arguments)
+        /// <returns>
+        /// True, if resolving constructor parameters succeed.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// constructorInfo
+        /// or
+        /// arguments
+        /// </exception>
+        private bool ResolveConstructorParameters(LifetimeScope lifetimeScope, RegisteredTypeContext ctx, MethodBase constructorInfo, ICollection<object> arguments)
         {
             if (constructorInfo == null)
             {
@@ -248,7 +272,7 @@ namespace MiniAutFac
                         continue;
                     }
 
-                    var parameterInstance = this.Resolve(parameterInfo.ParameterType);
+                    var parameterInstance = this.Resolve(lifetimeScope, parameterInfo.ParameterType, outputType);
                     arguments.Add(parameterInstance);
                 }
 

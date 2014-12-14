@@ -52,6 +52,11 @@
 
         public virtual object Resolve(Type type)
         {
+            return Resolve(this, type, requestingType: null);
+        }
+
+        internal virtual object Resolve(LifetimeScope lifetimeScope, Type type, Type requestingType)
+        {
             if (this.disposed)
             {
                 throw new LifetimeScopeDisposedException();
@@ -59,7 +64,7 @@
 
             if (!this.Container.TypeContainer.ContainsKey(type))
             {
-                return this.Container.ResolveInternal(type, this);
+                return this.Container.ResolveInternal(type, lifetimeScope);
             }
 
             var ctx = this.Container.TypeContainer[type];
@@ -68,13 +73,18 @@
             var scope = ctx.Scopes[outputType];
 
             object instance;
-            scope.GetInstance(this, () => this.Container.ResolveInternal(type, this), outputType, out instance);
+            scope.GetInstance(this, () => this.Container.ResolveInternal(type, lifetimeScope), outputType, out instance);
             return instance;
         }
 
         public virtual void Dispose()
         {
-            foreach (var childScope in this.ChildScopes)
+            if (disposed)
+            {
+                throw new InvalidOperationException("Lifetime scope has already been disposed.");
+            }
+
+            foreach (var childScope in this.ChildScopes.Where(lifetimeScope => !lifetimeScope.disposed))
             {
                 childScope.Dispose();
             }
