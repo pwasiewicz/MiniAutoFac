@@ -23,6 +23,7 @@ Releases
 * Parameters (named and evaluted paramteres)
 * Registering own instance factory for type
 * Simple modules (in progress) 
+* Fixed bug: when resolving enumerable within nested liftime scope and resolved instance was disposed incorrectly
 
 ### 1.2.2
 * Fixed invalid assembly version inside nuget package.
