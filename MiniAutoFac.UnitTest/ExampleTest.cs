@@ -13,6 +13,7 @@ namespace MiniAutoFac.UnitTest
     using MiniAutFac;
     using MiniAutFac.Exceptions;
     using MiniAutoFac.UnitTest.TestClasses;
+    using MiniAutoFac.UnitTest.TestClasses.EnumerableBug;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -403,6 +404,23 @@ namespace MiniAutoFac.UnitTest
             }
 
             Assert.AreEqual(2, called);
+        }
+
+        [TestMethod]
+        public void SomeDisposableWithinhInsideContext()
+        {
+            var builder = new ContainerBuilder();
+            builder.Register<SomeContext>().PerLifetimeScope();
+            builder.Register<SomeDisposable>().PerLifetimeScope();
+
+            SomeContext ctx;
+
+            using (var scope = builder.Build().BeginLifetimeScope())
+            {
+                ctx = scope.Resolve<SomeContext>();
+            }
+
+            Assert.IsTrue(ctx.Disposables.First().Disposed);
         }
     }
 }

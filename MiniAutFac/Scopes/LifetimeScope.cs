@@ -1,10 +1,10 @@
 ﻿namespace MiniAutFac.Scopes
 {
-    using System.Linq;
     using Interfaces;
+    using MiniAutFac.Exceptions;
     using System;
     using System.Collections.Generic;
-    using MiniAutFac.Exceptions;
+    using System.Linq;
 
     public class LifetimeScope : ILifetimeScope
     {
@@ -52,10 +52,10 @@
 
         public virtual object Resolve(Type type)
         {
-            return Resolve(type, requestingType: null);
+            return Resolve(this, type, requestingType: null);
         }
 
-        internal virtual object Resolve(Type type, Type requestingType)
+        internal virtual object Resolve(LifetimeScope lifetimeScope, Type type, Type requestingType)
         {
             if (this.disposed)
             {
@@ -64,7 +64,7 @@
 
             if (!this.Container.TypeContainer.ContainsKey(type))
             {
-                return this.Container.ResolveInternal(type, this);
+                return this.Container.ResolveInternal(type, lifetimeScope);
             }
 
             var ctx = this.Container.TypeContainer[type];
@@ -73,7 +73,7 @@
             var scope = ctx.Scopes[outputType];
 
             object instance;
-            scope.GetInstance(this, () => this.Container.ResolveInternal(type, this), outputType, out instance);
+            scope.GetInstance(this, () => this.Container.ResolveInternal(type, lifetimeScope), outputType, out instance);
             return instance;
         }
 
@@ -84,7 +84,7 @@
                 throw new InvalidOperationException("Lifetime scope has already been disposed.");
             }
 
-            foreach (var childScope in this.ChildScopes)
+            foreach (var childScope in this.ChildScopes.Where(lifetimeScope => !lifetimeScope.disposed))
             {
                 childScope.Dispose();
             }

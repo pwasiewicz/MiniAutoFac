@@ -61,6 +61,7 @@
     <Compile Include="ExampleTest.cs" />
     <Compile Include="GraphTest.cs" />
     <Compile Include="TestClasses\DisposableClass.cs" />
+    <Compile Include="TestClasses\EnumerableBug\SomeContext.cs" />
     <Compile Include="TestClasses\ParamtersClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestClasses\Class1.cs" />
