@@ -188,7 +188,6 @@ bld.Register<Foo>().As(ctx =>
                                  return new Logger(ctx.RequestingType); 
                                    // Requesting type is type, that request that instance
                                    // when f.e. injected as construcot parameter. Can be null, if type
-                                   // resolved directoly
-                                   .
+                                   // resolved directly
                               }).PerLifetimeScope();
 ```
