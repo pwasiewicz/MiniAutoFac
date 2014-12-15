@@ -16,10 +16,12 @@
         private readonly HashSet<Type> types;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisteredTypeContext"/> class.
+        /// Initializes a new instance of the <see cref="RegisteredTypeContext" /> class.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="types">The types.</param>
-        public RegisteredTypeContext(IList<Type> types)
+        /// <exception cref="System.InvalidOperationException">Double type registration. Type:  + type.FullName</exception>
+        public RegisteredTypeContext(Container container, IList<Type> types)
         {
             this.types = new HashSet<Type>();
             foreach (var type in types.Where(type => !this.types.Add(type)))
@@ -27,6 +29,7 @@
                 throw new InvalidOperationException("Double type registration. Type: " + type.FullName);
             }
 
+            this.Container = container;
             this.Parameters = new Dictionary<Type, HashSet<Parameter>>();
             this.OwnFactories = new Dictionary<Type, Func<ActivationContext, object>>();
             this.Scopes = new Dictionary<Type, Scope>();
@@ -46,9 +49,6 @@
         /// <summary>
         /// Gets or sets the scopes.
         /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
         public Dictionary<Type, Scope> Scopes { get; set; }
 
         /// <summary>
@@ -59,7 +59,12 @@
         /// <summary>
         /// Gets or sets the own factories.
         /// </summary>
-        public Dictionary<Type, Func<ActivationContext, object>> OwnFactories { get; set; } 
+        public Dictionary<Type, Func<ActivationContext, object>> OwnFactories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the container.
+        /// </summary>
+        public Container Container { get; set; }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

@@ -20,7 +20,7 @@
             this.lifetimeScopes = new Dictionary<LifetimeScope, Dictionary<Type, object>>();
         }
 
-        public override void GetInstance(LifetimeScope scope, Func<object> valueFactory, Type valueType, out object value)
+        public override void GetInstance(LifetimeScope lifetimeScope, Func<object> valueFactory, Type valueType, out object value)
         {
             object result;
 
@@ -28,10 +28,10 @@
             {
                 Dictionary<Type, object> scopeTypes;
 
-                if (!this.lifetimeScopes.TryGetValue(scope, out scopeTypes))
+                if (!this.lifetimeScopes.TryGetValue(lifetimeScope, out scopeTypes))
                 {
                     scopeTypes = new Dictionary<Type, object>();
-                    this.lifetimeScopes.Add(scope, scopeTypes);
+                    this.lifetimeScopes.Add(lifetimeScope, scopeTypes);
                 }
 
                 if (!scopeTypes.TryGetValue(valueType, out result))

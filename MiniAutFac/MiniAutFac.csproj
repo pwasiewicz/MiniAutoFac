@@ -110,6 +110,7 @@
     <Compile Include="Scopes\DefaultScopes\SingleInstanceScope.cs" />
     <Compile Include="Scopes\LifetimeScope.cs" />
     <Compile Include="Scopes\Scope.cs" />
+    <Compile Include="Scopes\Wrappers\ModuleDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MiniAutFac.nuspec" />

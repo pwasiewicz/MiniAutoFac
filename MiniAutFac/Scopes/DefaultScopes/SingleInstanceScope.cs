@@ -14,7 +14,7 @@
             this.instances = new Dictionary<Type, object>();
         }
 
-        public override void GetInstance(LifetimeScope scope, Func<object> valueFactory, Type valueType, out object value)
+        public override void GetInstance(LifetimeScope lifetimeScope, Func<object> valueFactory, Type valueType, out object value)
         {
             object result;
 

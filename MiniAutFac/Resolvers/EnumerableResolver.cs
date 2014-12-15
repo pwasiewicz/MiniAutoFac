@@ -50,6 +50,11 @@
                 throw new NotSupportedException("Not supported yet.");
             }
 
+            if (!lifetimeScope.Container.TypeContainer.ContainsKey(hiddenType))
+            {
+                throw new InvalidOperationException("Enumerable argument type not registered.");
+            }
+
             var typeContext = lifetimeScope.Container.TypeContainer[hiddenType];
             foreach (var outputType in typeContext)
             {

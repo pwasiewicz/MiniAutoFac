@@ -46,5 +46,18 @@
         public virtual void InstanceActivated(Type type, object instance)
         {
         }
+
+        /// <summary>
+        /// Registereds the instance resolved.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="instnace">The instnace.</param>
+        public virtual void RegisteredInstanceResolved(Type type, object instnace)
+        {
+        }
+
+        public virtual void InstanceResolved(Type type, object instnace)
+        {           
+        }
     }
 }

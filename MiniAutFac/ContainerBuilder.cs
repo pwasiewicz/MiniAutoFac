@@ -210,8 +210,10 @@ namespace MiniAutFac
                 }
 
                 var ctx =
-                    new RegisteredTypeContext(
-                        builderResolvableItems.Select(item => item.InTypes).SelectMany(types => types).ToList());
+                    new RegisteredTypeContext(resolvable,
+                                              builderResolvableItems.Select(item => item.InTypes)
+                                                                    .SelectMany(types => types)
+                                                                    .ToList());
 
 
                 foreach (var builderResolvableItem in builderResolvableItems)
