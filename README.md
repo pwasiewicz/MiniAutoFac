@@ -22,7 +22,7 @@ Releases
 ### 1.3.0 (future)
 * Parameters (named and evaluted paramteres)
 * Registering own instance factory for type
-* Simple modules (in progress) 
+* Simple modules
 * Fixed bug: when resolving enumerable within nested liftime scope and resolved instance was disposed incorrectly
 
 ### 1.2.2
