@@ -474,6 +474,27 @@ namespace MiniAutoFac.UnitTest
             Assert.IsTrue(instance.Activated);
         }
 
+
+        [TestMethod]
+        public void ModuleResolvingRegisteredCalledProperly()
+        {
+            var mod = new ModuleWithResolveTrackingAndOwnRegistration();
+            var bld = new ContainerBuilder();
+            bld.RegisterModule(mod);
+
+            ClassA i1;
+            ClassA i2;
+
+            using (var cnt = bld.Build().BeginLifetimeScope())
+            {
+                i1 = cnt.Resolve<ClassA>();
+                i2 = cnt.Resolve<ClassA>();
+            }
+
+            Assert.AreSame(i1, i2);
+            Assert.AreEqual(2, mod.Called);
+        }
+
         [TestMethod]
         public void ModuleResolvingCalledProperly()
         {

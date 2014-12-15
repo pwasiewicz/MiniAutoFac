@@ -64,6 +64,7 @@
     <Compile Include="TestClasses\EnumerableBug\SomeContext.cs" />
     <Compile Include="TestClasses\EmbeddingModule.cs" />
     <Compile Include="TestClasses\ModuleWithRegisteredInstanceListener.cs" />
+    <Compile Include="TestClasses\ModuleWithResolveTrackingAndOwnRegistration.cs" />
     <Compile Include="TestClasses\ModuleWithResolveTracking.cs" />
     <Compile Include="TestClasses\ParamtersClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
