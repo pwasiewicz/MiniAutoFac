@@ -9,13 +9,12 @@
 
 namespace MiniAutoFac.UnitTest
 {
-    using System.Diagnostics;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
     using MiniAutoFac.UnitTest.TestClasses;
-    using System;
     using MiniAutoFac.UnitTest.TestClasses.EnumerableBug;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
