@@ -30,7 +30,7 @@
         }
 
         /// <summary>
-        /// Registereds the instance activated.
+        /// Invoked, when any instance of registered type within current module is created.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="instance">The instance.</param>
@@ -39,7 +39,7 @@
         }
 
         /// <summary>
-        /// Instances the activated.
+        /// Invoked, when any instance is created.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="instance">The instance.</param>
@@ -48,7 +48,7 @@
         }
 
         /// <summary>
-        /// Registereds the instance resolved.
+        /// Invoked, when any instance of registered type within current module is resolved.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="instnace">The instnace.</param>
@@ -56,8 +56,13 @@
         {
         }
 
+        /// <summary>
+        /// Invoked, when any instance is resolved.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="instnace">The instnace.</param>
         public virtual void InstanceResolved(Type type, object instnace)
-        {           
+        {
         }
     }
 }
