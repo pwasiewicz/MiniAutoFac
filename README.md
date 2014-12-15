@@ -180,3 +180,15 @@ builder.Register<Foo>().WithEvalutedParameter(
                            requesingType => new Logger(requestingType));
 var foo = builder.Build().Resolve<Foo>();
 ```
+### Own instnace factory
+```c#
+bld.Register<Foo>().As(ctx =>
+                             {
+                                 // some other methods
+                                 return new Logger(ctx.RequestingType); 
+                                   // Requesting type is type, that request that instance
+                                   // when f.e. injected as construcot parameter. Can be null, if type
+                                   // resolved directoly
+                                   .
+                              }).PerLifetimeScope();
+```
