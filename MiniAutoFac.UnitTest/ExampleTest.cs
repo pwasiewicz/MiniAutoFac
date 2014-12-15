@@ -9,6 +9,7 @@
 
 namespace MiniAutoFac.UnitTest
 {
+    using System.Diagnostics;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -471,6 +472,27 @@ namespace MiniAutoFac.UnitTest
             var instance = cnt.Resolve<ActivableClass>();
 
             Assert.IsTrue(instance.Activated);
+        }
+
+        [TestMethod]
+        public void ModuleResolvingCalledProperly()
+        {
+            var mod = new ModuleWithResolveTracking();
+            var bld = new ContainerBuilder();
+            bld.Register<ClassA>().PerLifetimeScope();
+            bld.RegisterModule(mod);
+
+            ClassA i1;
+            ClassA i2;
+
+            using (var cnt = bld.Build().BeginLifetimeScope())
+            {
+                i1 = cnt.Resolve<ClassA>();
+                i2 = cnt.Resolve<ClassA>();
+            }
+
+            Assert.AreSame(i1, i2);
+            Assert.AreEqual(2, mod.Called);
         }
     }
 }

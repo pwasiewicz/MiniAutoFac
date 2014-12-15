@@ -15,7 +15,7 @@
         /// </summary>
         /// <param name="target">The target.</param>
         /// <returns></returns>
-        public override bool Resolvable(Type target, LifetimeScope scope)
+        public override bool Resolvable(Type target, LifetimeScope lifetimeScope)
         {
             if (!target.IsGenericType)
             {
@@ -24,7 +24,7 @@
 
             var enumerableType = typeof(IEnumerable<>);
             return target.GetGenericTypeDefinition() == enumerableType &&
-                   !scope.Container.TypeContainer.ContainsKey(target);
+                   !lifetimeScope.Container.TypeContainer.ContainsKey(target);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@
             var typeContext = lifetimeScope.Container.TypeContainer[hiddenType];
             foreach (var outputType in typeContext)
             {
-                var scope = typeContext.Scopes[outputType];
+                var scope = this.WrapScope(lifetimeScope, typeContext, typeContext.Scopes[outputType]);
 
                 object instance;
                 scope.GetInstance(lifetimeScope, () =>

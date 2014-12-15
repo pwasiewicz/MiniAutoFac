@@ -18,6 +18,7 @@ namespace MiniAutFac
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using Scopes.Wrappers;
     using Module = Modules.Module;
 
     /// <summary>
@@ -200,6 +201,12 @@ namespace MiniAutFac
         internal void RegisterResolver(Func<Container, ConcreteResolverBase> additionalResolvableFactory)
         {
             this.additionalResolvers.Add(additionalResolvableFactory(this));
+        }
+
+
+        internal Scope WrapScope(LifetimeScope lifetimeScope, RegisteredTypeContext ctx, Scope desiredScope)
+        {
+            return new ModuleDecorator(desiredScope, ctx, this.AllModules);
         }
 
         /// <summary>

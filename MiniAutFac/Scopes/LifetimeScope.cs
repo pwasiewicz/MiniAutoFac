@@ -70,7 +70,7 @@
             var ctx = this.Container.TypeContainer[type];
             var outputType = ctx.First();
 
-            var scope = ctx.Scopes[outputType];
+            var scope = this.Container.WrapScope(lifetimeScope, ctx, ctx.Scopes[outputType]);
 
             object instance;
             scope.GetInstance(this, () => this.Container.ResolveInternal(type, lifetimeScope), outputType, out instance);
