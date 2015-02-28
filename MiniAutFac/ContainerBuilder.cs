@@ -31,7 +31,7 @@ namespace MiniAutFac
         /// <summary>
         /// The type container.
         /// </summary>
-        private readonly List<ItemRegistration> typeContainer;
+        private readonly List<ItemRegistrationBase> typeContainer;
 
         /// <summary>
         /// The modules
@@ -43,7 +43,7 @@ namespace MiniAutFac
         /// </summary>
         public ContainerBuilder()
         {
-            this.typeContainer = new List<ItemRegistration>();
+            this.typeContainer = new List<ItemRegistrationBase>();
             this.modules = new HashSet<Module>();
             this.ResolveImplicit = false;
         }
@@ -83,11 +83,11 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
-        public ItemRegistrationBase Register(Type type)
+        public ConcreteItemRegistrationBase<object> Register(Type type)
         {
-            var builderItem = new ItemRegistration(this, type);
-            this.typeContainer.Add(builderItem);
-            return builderItem;
+            var registration = new ItemRegistration(this, type);
+            this.typeContainer.Add(registration);
+            return registration;
         }
 
         /// <summary>
@@ -95,9 +95,11 @@ namespace MiniAutFac
         /// </summary>
         /// <typeparam name="T">Type to register</typeparam>
         /// <returns>The IBuilderResolvableItem instance.</returns>
-        public ItemRegistrationBase Register<T>()
+        public ConcreteItemRegistrationBase<T> Register<T>()
         {
-            return this.Register(typeof(T));
+            var registration = new ItemRegistration<T>(this, typeof (T));
+            this.typeContainer.Add(registration);
+            return registration;
         }
 
         /// <summary>
@@ -134,17 +136,17 @@ namespace MiniAutFac
         /// <param name="predicate">The predicate.</param>
         /// <param name="assemblies">The assemblies.</param>
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
-        public ItemRegistrationBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
+        public ConcreteItemRegistrationBase<object> Register(Predicate<Type> predicate, params Assembly[] assemblies)
         {
             var matchingTypes =
                 assemblies.SelectMany(assembly => assembly.GetTypes())
                           .Where(type => !type.IsInterface && !type.IsAbstract)
                           .Where(type => predicate(type));
 
-            var resolvable = new ItemRegistration(this, matchingTypes.ToArray());
-            this.typeContainer.Add(resolvable);
+            var registration = new ItemRegistration(this, matchingTypes.ToArray());
+            this.typeContainer.Add(registration);
 
-            return resolvable;
+            return registration;
         }
 
         /// <summary>
@@ -152,12 +154,21 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="types">The types.</param>
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
-        public ItemRegistrationBase Register(params Type[] types)
+        public ConcreteItemRegistrationBase<object> Register(params Type[] types)
         {
-            var resolvable = new ItemRegistration(this, types);
-            this.typeContainer.Add(resolvable);
+            var registration = new ItemRegistration(this, types);
+            this.typeContainer.Add(registration);
 
-            return resolvable;
+            return registration;
+        }
+
+        public ConcreteItemRegistrationBase<TConcreteType> Register<TConcreteType>(
+            Func<ActivationContext, TConcreteType> factory)
+        {
+            var registration = new ItemRegistration<TConcreteType>(this, typeof (TConcreteType));
+            registration.As(factory);
+            this.typeContainer.Add(registration);
+            return registration;
         }
 
 

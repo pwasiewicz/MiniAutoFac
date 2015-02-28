@@ -17,6 +17,11 @@ namespace MiniAutFac
     using System;
     using System.Collections.Generic;
 
+    public abstract class ConcreteItemRegistrationBase<TConcreteType> : ItemRegistrationBase
+    {
+        protected ConcreteItemRegistrationBase(ContainerBuilder origin) : base(origin) {}
+    }
+
     /// <summary>
     /// The ItemRegistration interface.
     /// </summary>
@@ -39,18 +44,18 @@ namespace MiniAutFac
         /// Gets or sets the registered type.
         /// </summary>
         /// <value> The type of the input.  </value>
-        internal virtual Type[] InTypes { get; set; }
+        internal Type[] InTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the output type.
         /// </summary>
         /// <value>The type of the output. </value>
-        internal virtual Type AsType { get; set; }
+        internal Type AsType { get; set; }
 
         /// <summary>
         /// Gets or sets the parameters.
         /// </summary>
-        internal virtual List<Parameter> Parameters { get; set; }
+        internal List<Parameter> Parameters { get; set; }
 
         /// <summary>
         /// Gets or sets the own factory.

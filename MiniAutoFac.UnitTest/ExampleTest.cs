@@ -16,6 +16,7 @@ namespace MiniAutoFac.UnitTest
     using MiniAutoFac.UnitTest.TestClasses.EnumerableBug;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
 
@@ -494,6 +495,7 @@ namespace MiniAutoFac.UnitTest
             Assert.AreEqual(2, mod.Called);
         }
 
+
         [TestMethod]
         public void ModuleResolvingCalledProperly()
         {
@@ -513,6 +515,17 @@ namespace MiniAutoFac.UnitTest
 
             Assert.AreSame(i1, i2);
             Assert.AreEqual(2, mod.Called);
+        }
+
+
+        [TestMethod]
+        public void Register_RegisteringFactoryAsType()
+        {
+            var bld = new ContainerBuilder();
+            var bInst = new ClassB();
+            bld.Register(context => bInst).As<InterfaceForClassB>();
+            var cnt = bld.Build();
+            Assert.AreSame(bInst, cnt.Resolve<InterfaceForClassB>());
         }
     }
 }

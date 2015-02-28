@@ -9,22 +9,27 @@
 
 namespace MiniAutFac.Resolvable
 {
-    using MiniAutFac.Exceptions;
-    using MiniAutFac.Parameters;
+    using Exceptions;
+    using Parameters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
+    internal sealed class ItemRegistration : ItemRegistration<object>
+    {
+        internal ItemRegistration(ContainerBuilder builder, params Type[] inTypes) : base(builder, inTypes) {}
+    }
+
     /// <summary>
     /// The builder resolvable item.
     /// </summary>
-    internal sealed class ItemRegistration : ItemRegistrationBase
+    internal class ItemRegistration<TConcreteType> : ConcreteItemRegistrationBase<TConcreteType>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemRegistration" /> class.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="inType">Type of the input.</param>
+        /// <param name="inTypes"></param>
         internal ItemRegistration(ContainerBuilder builder, params Type[] inTypes)
             : base(builder)
         {

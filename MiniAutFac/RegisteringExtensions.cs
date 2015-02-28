@@ -51,10 +51,14 @@
         /// <param name="resolvableItemRegistrationBase">The resolvable item base.</param>
         /// <param name="instanceFactory">The instance factory.</param>
         /// <returns>Type registration base.</returns>
-        public static ItemRegistrationBase As(this ItemRegistrationBase resolvableItemRegistrationBase,
-                                                   Func<ActivationContext, object> instanceFactory)
+        public static ConcreteItemRegistrationBase<TConcreteType> As<TConcreteType>(
+            this ConcreteItemRegistrationBase<TConcreteType> resolvableItemRegistrationBase,
+            Func<ActivationContext, TConcreteType> instanceFactory)
         {
-            resolvableItemRegistrationBase.OwnFactory = instanceFactory;
+
+            resolvableItemRegistrationBase.OwnFactory = instanceFactory != null
+                                                            ? context => instanceFactory(context)
+                                                            : (Func<ActivationContext, object>) null;
             return resolvableItemRegistrationBase;
         }
 
@@ -62,12 +66,13 @@
         ///  Adds the instane of registered type that will be used when resolving.
         /// </summary>
         /// <param name="resolvableItemRegistrationBase">The resolvable item registration base.</param>
-        /// <param name="instanceFactory">The instance factory.</param>
+        /// <param name="instance">The instance factory.</param>
         /// <returns></returns>
-        public static ItemRegistrationBase As(this ItemRegistrationBase resolvableItemRegistrationBase,
-                                           object instanceFactory)
+        public static ConcreteItemRegistrationBase<TConcreteType> As<TConcreteType>(
+            this ConcreteItemRegistrationBase<TConcreteType> resolvableItemRegistrationBase,
+            TConcreteType instance)
         {
-            resolvableItemRegistrationBase.OwnFactory = ctx => instanceFactory;
+            resolvableItemRegistrationBase.OwnFactory = ctx => instance;
             return resolvableItemRegistrationBase;
         }
     }
