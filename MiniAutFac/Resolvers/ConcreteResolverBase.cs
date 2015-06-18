@@ -3,7 +3,6 @@
     using System;
     using Context;
     using Scopes;
-    using Scopes.Wrappers;
 
     internal abstract class ConcreteResolverBase
     {

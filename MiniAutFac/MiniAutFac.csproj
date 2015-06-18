@@ -104,6 +104,7 @@
     <Compile Include="Resolvers\ConcreteResolverBase.cs" />
     <Compile Include="Resolvers\EnumerableResolver.cs" />
     <Compile Include="Interfaces\ILifetimeScope.cs" />
+    <Compile Include="Resolvers\LazyResolver.cs" />
     <Compile Include="ScopeExtensions.cs" />
     <Compile Include="Scopes\DefaultScopes\PerDependencyScope.cs" />
     <Compile Include="Scopes\DefaultScopes\PerLifetimeScope.cs" />

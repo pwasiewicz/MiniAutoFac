@@ -9,6 +9,7 @@
 
 namespace MiniAutoFac.UnitTest
 {
+    using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -526,6 +527,41 @@ namespace MiniAutoFac.UnitTest
             bld.Register(context => bInst).As<InterfaceForClassB>();
             var cnt = bld.Build();
             Assert.AreSame(bInst, cnt.Resolve<InterfaceForClassB>());
+        }
+
+        [TestMethod]
+        public void Resolve_Lazy()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<ClassInstanceCount>().PerLifetimeScope();
+            ClassInstanceCount.Instances = 0;
+
+            var cnt = bld.Build();
+
+            var laztInst = cnt.Resolve<Lazy<ClassInstanceCount>>();
+
+            Assert.AreEqual(0, ClassInstanceCount.Instances);
+            var inst = laztInst.Value;
+            Assert.AreEqual(1, ClassInstanceCount.Instances);
+
+            laztInst = cnt.Resolve<Lazy<ClassInstanceCount>>();
+            inst = laztInst.Value;
+
+            Assert.AreEqual(1, ClassInstanceCount.Instances);
+        }
+
+        [TestMethod]
+        public void Resolve_LazyCombinedWithEnumerable()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<ClassInstanceCount>();
+
+            var cnt = bld.Build();
+            var instancesEvaluator = cnt.Resolve<Lazy<IEnumerable<ClassInstanceCount>>>();
+
+            var instances = instancesEvaluator.Value;
+
+            Assert.AreEqual(1, instances.Count());
         }
     }
 }
