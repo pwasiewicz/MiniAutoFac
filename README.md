@@ -20,7 +20,7 @@ Releases
 -----------
 
 ### 1.3.1
-* Registering value factory (delegate) for instance creation
+* Registering type via value factory
 
 ### 1.3.0
 * Parameters (named and evaluted paramteres)
@@ -194,3 +194,11 @@ bld.Register<Foo>().As(ctx =>
                                    // resolved directly
                               }).PerLifetimeScope();
 ```
+
+### Registering type via value factory
+```c#
+var bld = new ContainerBuilder();
+var bInst = new ClassB();
+bld.Register(context => bInst).As<InterfaceForClassB>();
+```
+            
