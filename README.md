@@ -19,6 +19,9 @@ Features
 Releases
 -----------
 
+### 1.3.1
+* Registering value factory (delegate) for instance creation
+
 ### 1.3.0
 * Parameters (named and evaluted paramteres)
 * Registering own instance factory for type
