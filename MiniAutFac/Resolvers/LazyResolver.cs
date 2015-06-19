@@ -1,11 +1,10 @@
 ﻿namespace MiniAutFac.Resolvers
 {
-    using System;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Reflection;
     using Interfaces;
     using Scopes;
+    using System;
+    using System.Linq;
+    using System.Reflection;
 
     internal class LazyResolver : ConcreteResolverBase
     {
@@ -25,17 +24,9 @@
         {
             var hiddenType = target.GetGenericArguments()[0];
 
-            var typeConst = Expression.Constant(hiddenType);
-            var lifetimeScopeInst = Expression.Constant(lifetimeScope);
-
-            var resolveMth = typeof(LifetimeScope).GetMethod("Resolve");
-
-            var callGetInst = Expression.Call(lifetimeScopeInst, resolveMth, typeConst);
-            var cast = Expression.Convert(callGetInst, hiddenType);
-            var valueFactory = Expression.Lambda(cast).Compile();
-
             return
-                lifetimeScope.Container.ActivationEngine(ActivatorDataForList(hiddenType, valueFactory));
+                lifetimeScope.Container.ActivationEngine(ActivatorDataForList(hiddenType,
+                                                                              lifetimeScope.ResolvingDelegate(hiddenType)));
         }
 
         private static IObjectActivatorData ActivatorDataForList(Type itemType, Delegate valueFactory)

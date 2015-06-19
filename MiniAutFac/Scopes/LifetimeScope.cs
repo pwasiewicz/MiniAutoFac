@@ -1,13 +1,18 @@
 ﻿namespace MiniAutFac.Scopes
 {
+    using System.Linq.Expressions;
+    using System.Reflection;
     using Interfaces;
-    using MiniAutFac.Exceptions;
+    using Exceptions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     public class LifetimeScope : ILifetimeScope
     {
+        private static readonly Lazy<MethodInfo> ResolveMethodInfo =
+            new Lazy<MethodInfo>(() => typeof(LifetimeScope).GetMethod("Resolve"));
+
         private Container container;
 
         internal LifetimeScope ParentScope;
@@ -23,6 +28,21 @@
             this.ParentScope = parent;
             this.ChildScopes = new List<LifetimeScope>();
             this.ScopeAllInstances = new HashSet<object>();
+        }
+
+
+        internal Delegate ResolvingDelegate(Type forType)
+        {
+            if (forType == null) throw new ArgumentNullException("forType");
+
+            var typeConst = Expression.Constant(forType);
+            var lifetimeScopeInst = Expression.Constant(this);
+
+            var callGetInst = Expression.Call(lifetimeScopeInst, ResolveMethodInfo.Value, typeConst);
+            var cast = Expression.Convert(callGetInst, forType);
+            var valueFactory = Expression.Lambda(cast).Compile();
+
+            return valueFactory;
         }
 
         internal Container Container
