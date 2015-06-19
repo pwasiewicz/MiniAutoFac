@@ -108,6 +108,12 @@ namespace MiniAutFac
         /// <param name="assemblies">The assemblies.</param>
         public void Register(params Assembly[] assemblies)
         {
+            if (assemblies == null) throw new ArgumentNullException("assemblies");
+            if (assemblies.Length == 0)
+            {
+                throw new ArgumentException("At least one assembly should be passed.");
+            }
+
             var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes());
             foreach (var type in allTypes)
             {
@@ -138,6 +144,12 @@ namespace MiniAutFac
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
         public ConcreteItemRegistrationBase<object> Register(Predicate<Type> predicate, params Assembly[] assemblies)
         {
+            if (assemblies == null) throw new ArgumentNullException("assemblies");
+            if (assemblies.Length == 0)
+            {
+                throw new ArgumentException("At least one assembly should be passed.");
+            }
+
             var matchingTypes =
                 assemblies.SelectMany(assembly => assembly.GetTypes())
                           .Where(type => !type.IsInterface && !type.IsAbstract)

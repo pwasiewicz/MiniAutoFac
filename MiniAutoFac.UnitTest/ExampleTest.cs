@@ -9,7 +9,6 @@
 
 namespace MiniAutoFac.UnitTest
 {
-    using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
@@ -17,7 +16,6 @@ namespace MiniAutoFac.UnitTest
     using MiniAutoFac.UnitTest.TestClasses.EnumerableBug;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
 
