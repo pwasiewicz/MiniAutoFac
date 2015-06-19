@@ -18,6 +18,8 @@ Features
 
 Releases
 -----------
+### 1.3.2
+* Resolving Lazy - instances are resolved only when Value is called.
 
 ### 1.3.1
 * Registering type via value factory
