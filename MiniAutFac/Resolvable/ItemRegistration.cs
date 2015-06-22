@@ -23,7 +23,7 @@ namespace MiniAutFac.Resolvable
     /// <summary>
     /// The builder resolvable item.
     /// </summary>
-    internal class ItemRegistration<TConcreteType> : ConcreteItemRegistrationBase<TConcreteType>
+    internal class ItemRegistration<TConcreteType> : ConcreteItemRegistrationBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemRegistration" /> class.

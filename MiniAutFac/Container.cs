@@ -113,7 +113,6 @@ namespace MiniAutFac
             }
 
             var outputType = registeredInstancesPair.Value.First();
-
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();
@@ -178,6 +177,15 @@ namespace MiniAutFac
                         ConstructorArguments = constructorArguments
                     });
 
+            this.ActivateInModules(ctx, target, instance);
+
+            scope.ScopeAllInstances.Add(instance);
+
+            return instance;
+        }
+
+        private void ActivateInModules(RegisteredTypeContext ctx, Type target, object instance)
+        {
             var moduleForType = ctx.Modules.ContainsKey(target) ? ctx.Modules[target] : null;
 
             foreach (var module in this.AllModules)
@@ -188,10 +196,6 @@ namespace MiniAutFac
                     module.RegisteredInstanceActivated(target, instance);
                 }
             }
-
-            scope.ScopeAllInstances.Add(instance);
-
-            return instance;
         }
 
         /// <summary>
@@ -202,7 +206,6 @@ namespace MiniAutFac
         {
             this.additionalResolvers.Add(additionalResolvableFactory(this));
         }
-
 
         internal Scope WrapScope(LifetimeScope lifetimeScope, RegisteredTypeContext ctx, Scope desiredScope)
         {
@@ -264,9 +267,8 @@ namespace MiniAutFac
 
                     if (declaredParameters != null)
                     {
-                        foreach (
-                                var parameterCtx in
-                                    declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
+                        foreach (var parameterCtx in
+                                         declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
                         {
                             arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
                             paramterResolved = true;

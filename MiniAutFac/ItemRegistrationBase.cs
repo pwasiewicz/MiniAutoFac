@@ -17,9 +17,9 @@ namespace MiniAutFac
     using System;
     using System.Collections.Generic;
 
-    public abstract class ConcreteItemRegistrationBase<TConcreteType> : ItemRegistrationBase
+    public abstract class ConcreteItemRegistrationBase : ItemRegistrationBase
     {
-        protected ConcreteItemRegistrationBase(ContainerBuilder origin) : base(origin) {}
+        protected ConcreteItemRegistrationBase(ContainerBuilder origin) : base(origin) { }
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the own factory.
         /// </summary>
-        internal virtual Func<ActivationContext, object> OwnFactory { get; set; } 
+        internal virtual Func<ActivationContext, object> OwnFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the scope.

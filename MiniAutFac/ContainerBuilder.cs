@@ -83,7 +83,7 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
-        public ConcreteItemRegistrationBase<object> Register(Type type)
+        public ConcreteItemRegistrationBase Register(Type type)
         {
             var registration = new ItemRegistration(this, type);
             this.typeContainer.Add(registration);
@@ -95,7 +95,7 @@ namespace MiniAutFac
         /// </summary>
         /// <typeparam name="T">Type to register</typeparam>
         /// <returns>The IBuilderResolvableItem instance.</returns>
-        public ConcreteItemRegistrationBase<T> Register<T>()
+        public ConcreteItemRegistrationBase Register<T>()
         {
             var registration = new ItemRegistration<T>(this, typeof(T));
             this.typeContainer.Add(registration);
@@ -142,7 +142,7 @@ namespace MiniAutFac
         /// <param name="predicate">The predicate.</param>
         /// <param name="assemblies">The assemblies.</param>
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
-        public ConcreteItemRegistrationBase<object> Register(Predicate<Type> predicate, params Assembly[] assemblies)
+        public ConcreteItemRegistrationBase Register(Predicate<Type> predicate, params Assembly[] assemblies)
         {
             if (assemblies == null) throw new ArgumentNullException("assemblies");
             if (assemblies.Length == 0)
@@ -166,7 +166,7 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="types">The types.</param>
         /// <returns>Instance of ItemRegistrationBase that allows to specify additional configuration.</returns>
-        public ConcreteItemRegistrationBase<object> Register(params Type[] types)
+        public ConcreteItemRegistrationBase Register(params Type[] types)
         {
             var registration = new ItemRegistration(this, types);
             this.typeContainer.Add(registration);
@@ -174,7 +174,7 @@ namespace MiniAutFac
             return registration;
         }
 
-        public ConcreteItemRegistrationBase<TConcreteType> Register<TConcreteType>(
+        public ConcreteItemRegistrationBase Register<TConcreteType>(
             Func<ActivationContext, TConcreteType> factory)
         {
             var registration = new ItemRegistration<TConcreteType>(this, typeof(TConcreteType));
@@ -354,6 +354,14 @@ namespace MiniAutFac
         /// <param name="resolvable">The instance factory.</param>
         private static void CheckForCycles(Container resolvable)
         {
+            if (MakeDependencyGraph(resolvable).HasCycle())
+            {
+                throw new CircularDependenciesException();
+            }
+        }
+
+        private static Graph<Type> MakeDependencyGraph(Container resolvable)
+        {
             var graph = new Graph<Type>();
 
             foreach (var type in resolvable.TypeContainer.Values.SelectMany(types => types.ToList()))
@@ -367,11 +375,7 @@ namespace MiniAutFac
                     graph.AddEdge(type, parameterInfo.ParameterType);
                 }
             }
-
-            if (graph.HasCycle())
-            {
-                throw new CircularDependenciesException();
-            }
+            return graph;
         }
     }
 }

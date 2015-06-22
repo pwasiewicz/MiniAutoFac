@@ -11,6 +11,8 @@ namespace MiniAutFac
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Reflection;
 
     using MiniAutFac.Interfaces;
@@ -20,6 +22,8 @@ namespace MiniAutFac
     /// </summary>
     internal class ObjectActivatorData : IObjectActivatorData
     {
+        private IEnumerable<object> constructorArguments;
+
         /// <summary>
         /// Gets or sets the resolved type.
         /// </summary>
@@ -33,6 +37,10 @@ namespace MiniAutFac
         /// <summary>
         /// Gets or sets the constructor arguments.
         /// </summary>
-        public IEnumerable<object> ConstructorArguments { get; set; }
+        public IEnumerable<object> ConstructorArguments
+        {
+            get { return this.constructorArguments; }
+            set { this.constructorArguments = new ReadOnlyCollection<object>(value as List<object> ?? value.ToList()); }
+        }
     }
 }

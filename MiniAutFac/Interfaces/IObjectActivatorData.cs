@@ -21,16 +21,16 @@ namespace MiniAutFac.Interfaces
         /// <summary>
         /// Gets or sets the resolved type.
         /// </summary>
-        Type ResolvedType { get; set; }
+        Type ResolvedType { get; }
 
         /// <summary>
         /// Gets or sets the constructor info.
         /// </summary>
-        ConstructorInfo ConstructorInfo { get; set; }
+        ConstructorInfo ConstructorInfo { get; }
 
         /// <summary>
         /// Gets or sets the constructor arguments.
         /// </summary>
-        IEnumerable<object> ConstructorArguments { get; set; } 
+        IEnumerable<object> ConstructorArguments { get; }
     }
 }

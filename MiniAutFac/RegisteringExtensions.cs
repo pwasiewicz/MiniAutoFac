@@ -51,8 +51,8 @@
         /// <param name="resolvableItemRegistrationBase">The resolvable item base.</param>
         /// <param name="instanceFactory">The instance factory.</param>
         /// <returns>Type registration base.</returns>
-        public static ConcreteItemRegistrationBase<TConcreteType> As<TConcreteType>(
-            this ConcreteItemRegistrationBase<TConcreteType> resolvableItemRegistrationBase,
+        public static ConcreteItemRegistrationBase As<TConcreteType>(
+            this ConcreteItemRegistrationBase resolvableItemRegistrationBase,
             Func<ActivationContext, TConcreteType> instanceFactory)
         {
 
@@ -68,8 +68,8 @@
         /// <param name="resolvableItemRegistrationBase">The resolvable item registration base.</param>
         /// <param name="instance">The instance factory.</param>
         /// <returns></returns>
-        public static ConcreteItemRegistrationBase<TConcreteType> As<TConcreteType>(
-            this ConcreteItemRegistrationBase<TConcreteType> resolvableItemRegistrationBase,
+        public static ConcreteItemRegistrationBase As<TConcreteType>(
+            this ConcreteItemRegistrationBase resolvableItemRegistrationBase,
             TConcreteType instance)
         {
             resolvableItemRegistrationBase.OwnFactory = ctx => instance;
