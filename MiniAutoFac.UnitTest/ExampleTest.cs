@@ -618,5 +618,25 @@ namespace MiniAutoFac.UnitTest
             Assert.IsInstanceOfType(firstInstance, typeof(ClassA));
             Assert.IsInstanceOfType(second, typeof(ClassB));
         }
+
+        [TestMethod]
+        public void Resolve_Keyed_WithIEnumerable()
+        {
+            const string someKey = "someKey";
+
+            var bld = new ContainerBuilder();
+            bld.Register<ClassB>().As<IFoo>().Keyed(someKey);
+            bld.Register<ClassA>().As<IFoo>().Keyed(someKey);
+
+            bld.Register<FooClass>().As<IFoo>();
+
+            var cnt = bld.Build();
+
+            var coll = cnt.ResolveKeyed<IEnumerable<IFoo>>(someKey).ToList();
+            var inst = cnt.Resolve<IFoo>();
+
+            Assert.IsInstanceOfType(inst, typeof(FooClass));
+            Assert.AreEqual(2, coll.Count);
+        }
     }
 }

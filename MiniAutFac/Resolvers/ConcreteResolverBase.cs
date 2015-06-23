@@ -20,7 +20,7 @@
         /// <param name="target">The target.</param>
         /// <param name="lifetimeScope">The lifetimeScope.</param>
         /// <returns></returns>
-        public abstract object Resolve(Type target, LifetimeScope lifetimeScope);
+        public abstract object Resolve(Type target, LifetimeScope lifetimeScope, object key = null);
 
         /// <summary>
         /// Wraps the scope.

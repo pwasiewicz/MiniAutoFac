@@ -11,7 +11,7 @@
             return typeof(ILifetimeScope) == target;
         }
 
-        public override object Resolve(Type target, LifetimeScope lifetimeScope)
+        public override object Resolve(Type target, LifetimeScope lifetimeScope, object key = null)
         {
             return lifetimeScope;
         }

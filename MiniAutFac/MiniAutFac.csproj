@@ -78,6 +78,7 @@
     <Compile Include="Context\ActivationContext.cs" />
     <Compile Include="Exceptions\LifetimeScopeDisposedException.cs" />
     <Compile Include="Exceptions\RegistrationNotAllowedException.cs" />
+    <Compile Include="Extensions\RegisteredTypeContextExtensions.cs" />
     <Compile Include="Helpers\Types.cs" />
     <Compile Include="Modules\Module.cs" />
     <Compile Include="Parameters\Concrete\EvalutedParamter.cs" />

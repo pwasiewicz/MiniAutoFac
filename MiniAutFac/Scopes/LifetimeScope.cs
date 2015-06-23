@@ -11,7 +11,7 @@
     public class LifetimeScope : ILifetimeScope
     {
         private static readonly Lazy<MethodInfo> ResolveMethodInfo =
-            new Lazy<MethodInfo>(() => typeof(LifetimeScope).GetMethod("Resolve"));
+            new Lazy<MethodInfo>(() => typeof(LifetimeScope).GetMethod("ResolveKeyed"));
 
         private Container container;
 
@@ -31,14 +31,15 @@
         }
 
 
-        internal Delegate ResolvingDelegate(Type forType)
+        internal Delegate ResolvingDelegate(Type forType, object key)
         {
             if (forType == null) throw new ArgumentNullException("forType");
 
             var typeConst = Expression.Constant(forType);
+            var keyConst = Expression.Constant(key);
             var lifetimeScopeInst = Expression.Constant(this);
 
-            var callGetInst = Expression.Call(lifetimeScopeInst, ResolveMethodInfo.Value, typeConst);
+            var callGetInst = Expression.Call(lifetimeScopeInst, ResolveMethodInfo.Value, typeConst, keyConst);
             var cast = Expression.Convert(callGetInst, forType);
             var valueFactory = Expression.Lambda(cast).Compile();
 
@@ -72,7 +73,7 @@
 
         public virtual object Resolve(Type type)
         {
-            return Resolve(this, type, requestingType: null);
+            return Resolve(this, type, requestingType: null, key: null);
         }
 
         public object ResolveKeyed(Type type, object key)

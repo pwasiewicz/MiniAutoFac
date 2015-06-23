@@ -9,6 +9,7 @@
 
 namespace MiniAutFac
 {
+    using Extensions;
     using MiniAutFac.Context;
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
@@ -84,7 +85,7 @@ namespace MiniAutFac
             foreach (
                 var instance in
                     this.additionalResolvers.Where(additionalResolver => additionalResolver.Resolvable(type, lifetimeScope))
-                        .Select(additionalResolver => additionalResolver.Resolve(desiredType, lifetimeScope)))
+                        .Select(additionalResolver => additionalResolver.Resolve(desiredType, lifetimeScope, key)))
             {
                 lifetimeScope.ScopeAllInstances.Add(instance);
                 return instance;
@@ -107,28 +108,13 @@ namespace MiniAutFac
                 }
             }
 
-            Type outputType = null;
-
-            foreach (var possibleType in registeredInstancesPair.Value)
-            {
-                if (key == null && !registeredInstancesPair.Value.Keys.ContainsKey(possibleType))
-                {
-                    outputType = possibleType;
-                    break;
-                }
-
-                if (key != null)
-                {
-                    outputType = registeredInstancesPair.Value.Keys.First(pair => pair.Value == key).Key;
-                    break;
-                }
-            }
-
-            if (outputType == null)
+            var types = registeredInstancesPair.Value.GetForKey(key).ToList();
+            if (types.Skip(1).Any())
             {
                 throw new CannotResolveTypeException();
             }
 
+            var outputType = types.First();
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();

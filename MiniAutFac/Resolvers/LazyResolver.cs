@@ -20,13 +20,13 @@
                    !lifetimeScope.Container.TypeContainer.ContainsKey(target);
         }
 
-        public override object Resolve(Type target, LifetimeScope lifetimeScope)
+        public override object Resolve(Type target, LifetimeScope lifetimeScope, object key = null)
         {
             var hiddenType = target.GetGenericArguments()[0];
 
             return
                 lifetimeScope.Container.ActivationEngine(ActivatorDataForList(hiddenType,
-                                                                              lifetimeScope.ResolvingDelegate(hiddenType)));
+                                                                              lifetimeScope.ResolvingDelegate(hiddenType, key)));
         }
 
         private static IObjectActivatorData ActivatorDataForList(Type itemType, Delegate valueFactory)

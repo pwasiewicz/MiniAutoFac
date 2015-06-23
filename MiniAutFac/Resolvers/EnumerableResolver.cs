@@ -1,5 +1,6 @@
 ﻿namespace MiniAutFac.Resolvers
 {
+    using Extensions;
     using Interfaces;
     using Scopes;
     using System;
@@ -35,7 +36,7 @@
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Fata error: List instance doesn't implements IList interface.</exception>
         /// <exception cref="System.NotSupportedException">Not supported yet.</exception>
-        public override object Resolve(Type target, LifetimeScope lifetimeScope)
+        public override object Resolve(Type target, LifetimeScope lifetimeScope, object key = null)
         {
             var hiddenType = target.GetGenericArguments()[0];
 
@@ -56,7 +57,7 @@
             }
 
             var typeContext = lifetimeScope.Container.TypeContainer[hiddenType];
-            foreach (var outputType in typeContext)
+            foreach (var outputType in typeContext.GetForKey(key))
             {
                 var scope = this.WrapScope(lifetimeScope, typeContext, typeContext.Scopes[outputType]);
 
