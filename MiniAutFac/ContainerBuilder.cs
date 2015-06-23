@@ -97,9 +97,7 @@ namespace MiniAutFac
         /// <returns>The IBuilderResolvableItem instance.</returns>
         public ConcreteItemRegistrationBase Register<T>()
         {
-            var registration = new ItemRegistration<T>(this, typeof(T));
-            this.typeContainer.Add(registration);
-            return registration;
+            return this.Register(typeof(T));
         }
 
         /// <summary>
@@ -211,6 +209,7 @@ namespace MiniAutFac
 
             resolvable.RegisterResolver(cnt => new EnumerableResolver());
             resolvable.RegisterResolver(cnt => new LazyResolver());
+            resolvable.RegisterResolver(cnt => new ContainerItselfResolver());
 
             if (this.ActivatorEngine == null)
             {

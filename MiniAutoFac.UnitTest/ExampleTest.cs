@@ -12,12 +12,13 @@ namespace MiniAutoFac.UnitTest
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MiniAutFac;
     using MiniAutFac.Exceptions;
-    using MiniAutoFac.UnitTest.TestClasses;
-    using MiniAutoFac.UnitTest.TestClasses.EnumerableBug;
+    using MiniAutFac.Interfaces;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using TestClasses;
+    using TestClasses.EnumerableBug;
 
     /// <summary>
     /// The example test.
@@ -539,10 +540,12 @@ namespace MiniAutoFac.UnitTest
             var laztInst = cnt.Resolve<Lazy<ClassInstanceCount>>();
 
             Assert.AreEqual(0, ClassInstanceCount.Instances);
+            // ReSharper disable once NotAccessedVariable
             var inst = laztInst.Value;
             Assert.AreEqual(1, ClassInstanceCount.Instances);
 
             laztInst = cnt.Resolve<Lazy<ClassInstanceCount>>();
+            // ReSharper disable once RedundantAssignment
             inst = laztInst.Value;
 
             Assert.AreEqual(1, ClassInstanceCount.Instances);
@@ -560,6 +563,41 @@ namespace MiniAutoFac.UnitTest
             var instances = instancesEvaluator.Value;
 
             Assert.AreEqual(1, instances.Count());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RegistrationNotAllowedException))]
+        public void Register_ForbidenType_ThrowsExcp()
+        {
+
+            (new ContainerBuilder()).Register<LifetimeProxy>().As<ILifetimeScope>();
+        }
+
+        [TestMethod]
+        public void Resolve_ClassWithLifeTimeScopeInjected_ReturnsProperInstances()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<InjectLifetimeScopeClass>();
+
+            var cnt = bld.Build();
+
+            var cl = cnt.Resolve<InjectLifetimeScopeClass>();
+
+            Assert.AreSame(cnt, cl.Scope);
+        }
+
+        [TestMethod]
+        public void Resolve_ClassWithLifeTimeScopeInjected_NestedLifetimeScope_ReturnsProperInstances()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<InjectLifetimeScopeClass>();
+
+            var cnt = bld.Build();
+
+            var lf = cnt.BeginLifetimeScope();
+            var cl = lf.Resolve<InjectLifetimeScopeClass>();
+
+            Assert.AreSame(lf, cl.Scope);
         }
     }
 }

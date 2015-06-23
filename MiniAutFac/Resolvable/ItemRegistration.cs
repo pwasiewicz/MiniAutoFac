@@ -10,6 +10,7 @@
 namespace MiniAutFac.Resolvable
 {
     using Exceptions;
+    using Helpers;
     using Parameters;
     using System;
     using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace MiniAutFac.Resolvable
 
     internal sealed class ItemRegistration : ItemRegistration<object>
     {
-        internal ItemRegistration(ContainerBuilder builder, params Type[] inTypes) : base(builder, inTypes) {}
+        internal ItemRegistration(ContainerBuilder builder, params Type[] inTypes) : base(builder, inTypes) { }
     }
 
     /// <summary>
@@ -34,6 +35,13 @@ namespace MiniAutFac.Resolvable
             : base(builder)
         {
             this.Parameters = new List<Parameter>();
+            foreach (var inType in inTypes)
+            {
+                if (Types.IsRegistrationForbiddenType(inType))
+                {
+                    throw new RegistrationNotAllowedException("Type " + inType.FullName + " cannot be registered.");
+                }
+            }
 
             this.InTypes = inTypes;
 
@@ -51,6 +59,11 @@ namespace MiniAutFac.Resolvable
             if (this.InTypes.Any(inType => !type.IsAssignableFrom(inType)))
             {
                 throw new NotAssignableException();
+            }
+
+            if (Types.IsRegistrationForbiddenType(type))
+            {
+                throw new RegistrationNotAllowedException("Type " + type.FullName + " is forbidden to register.");
             }
 
             this.AsType = type;
