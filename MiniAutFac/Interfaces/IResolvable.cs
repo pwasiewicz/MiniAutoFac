@@ -18,5 +18,6 @@ namespace MiniAutFac.Interfaces
     {
 
         object Resolve(Type type);
+        object ResolveKeyed(Type type, object key);
     }
 }

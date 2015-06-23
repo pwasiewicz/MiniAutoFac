@@ -32,6 +32,7 @@
             this.Container = container;
             this.Parameters = new Dictionary<Type, HashSet<Parameter>>();
             this.OwnFactories = new Dictionary<Type, Func<ActivationContext, object>>();
+            this.Keys = new Dictionary<Type, object>();
             this.Scopes = new Dictionary<Type, Scope>();
             this.Modules = new Dictionary<Type, Module>();
 
@@ -60,6 +61,8 @@
         /// Gets or sets the own factories.
         /// </summary>
         public Dictionary<Type, Func<ActivationContext, object>> OwnFactories { get; set; }
+
+        public Dictionary<Type, object> Keys { get; set; }
 
         /// <summary>
         /// Gets or sets the container.

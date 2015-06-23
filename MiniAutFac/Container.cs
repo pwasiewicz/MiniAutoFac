@@ -73,7 +73,7 @@ namespace MiniAutFac
         /// <exception cref="TypeRepositoryEmptyException"></exception>
         /// <exception cref="CannotResolveTypeException">
         /// </exception>
-        public object ResolveInternal(Type type, LifetimeScope lifetimeScope, Type requestingType = null)
+        public object ResolveInternal(Type type, LifetimeScope lifetimeScope, Type requestingType = null, object key = null)
         {
             if (this.TypeContainer == null)
             {
@@ -107,12 +107,28 @@ namespace MiniAutFac
                 }
             }
 
-            if (registeredInstancesPair.Value.Skip(1).Any())
+            Type outputType = null;
+
+            foreach (var possibleType in registeredInstancesPair.Value)
+            {
+                if (key == null && !registeredInstancesPair.Value.Keys.ContainsKey(possibleType))
+                {
+                    outputType = possibleType;
+                    break;
+                }
+
+                if (key != null)
+                {
+                    outputType = registeredInstancesPair.Value.Keys.First(pair => pair.Value == key).Key;
+                    break;
+                }
+            }
+
+            if (outputType == null)
             {
                 throw new CannotResolveTypeException();
             }
 
-            var outputType = registeredInstancesPair.Value.First();
             if (!desiredType.IsAssignableFrom(outputType))
             {
                 throw new CannotResolveTypeException();

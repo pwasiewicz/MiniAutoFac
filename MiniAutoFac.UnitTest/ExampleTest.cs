@@ -599,5 +599,24 @@ namespace MiniAutoFac.UnitTest
 
             Assert.AreSame(lf, cl.Scope);
         }
+
+        [TestMethod]
+        public void Keyed_Resolve()
+        {
+            const string someKey = "someKey";
+
+            var bld = new ContainerBuilder();
+            bld.Register<ClassB>().As<IFoo>().Keyed(someKey);
+            bld.Register<ClassA>().As<IFoo>();
+
+            var cnt = bld.Build();
+
+            var firstInstance = cnt.Resolve<IFoo>();
+            var second = cnt.ResolveKeyed<IFoo>(someKey);
+
+
+            Assert.IsInstanceOfType(firstInstance, typeof(ClassA));
+            Assert.IsInstanceOfType(second, typeof(ClassB));
+        }
     }
 }

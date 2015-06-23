@@ -53,6 +53,11 @@ namespace MiniAutFac
         internal Type AsType { get; set; }
 
         /// <summary>
+        /// Gets or sets the key for item.
+        /// </summary>
+        internal object Key { get; set; }
+
+        /// <summary>
         /// Gets or sets the parameters.
         /// </summary>
         internal List<Parameter> Parameters { get; set; }

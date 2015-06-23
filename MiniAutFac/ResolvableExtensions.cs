@@ -21,5 +21,15 @@
 
             return (T)resolvable.Resolve(typeof(T));
         }
+
+        public static T ResolveKeyed<T>(this IResolvable resolvable, object key)
+        {
+            if (resolvable == null)
+            {
+                throw new ArgumentNullException("resolvable");
+            }
+
+            return (T)resolvable.ResolveKeyed(typeof(T), key);
+        }
     }
 }

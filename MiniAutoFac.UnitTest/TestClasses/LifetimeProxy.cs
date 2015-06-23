@@ -10,6 +10,11 @@
             return null;
         }
 
+        public object ResolveKeyed(Type type, object key)
+        {
+            return null;
+        }
+
         public void Dispose()
         {
         }

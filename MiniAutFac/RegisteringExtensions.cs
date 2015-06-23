@@ -45,6 +45,14 @@
             return resolvableItemRegistrationBase;
         }
 
+
+        public static ItemRegistrationBase Keyed(
+            this ItemRegistrationBase resolvableItemRegistrationBase, object key)
+        {
+            resolvableItemRegistrationBase.Key = key;
+            return resolvableItemRegistrationBase;
+        }
+
         /// <summary>
         /// Adds function that creates instances of registered type.
         /// </summary>
@@ -58,7 +66,7 @@
 
             resolvableItemRegistrationBase.OwnFactory = instanceFactory != null
                                                             ? context => instanceFactory(context)
-                                                            : (Func<ActivationContext, object>) null;
+                                                            : (Func<ActivationContext, object>)null;
             return resolvableItemRegistrationBase;
         }
 
@@ -75,5 +83,6 @@
             resolvableItemRegistrationBase.OwnFactory = ctx => instance;
             return resolvableItemRegistrationBase;
         }
+
     }
 }

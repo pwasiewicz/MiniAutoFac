@@ -251,6 +251,11 @@ namespace MiniAutFac
 
                     foreach (var type in builderResolvableItem.InTypes)
                     {
+                        if (builderResolvableItem.Key != null)
+                        {
+                            ctx.Keys.Add(type, builderResolvableItem.Key);
+                        }
+
                         foreach (var parameter in builderResolvableItem.Parameters)
                         {
                             if (!ctx.Parameters.ContainsKey(type))

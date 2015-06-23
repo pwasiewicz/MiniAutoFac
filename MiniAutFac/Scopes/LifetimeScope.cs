@@ -75,7 +75,12 @@
             return Resolve(this, type, requestingType: null);
         }
 
-        internal virtual object Resolve(LifetimeScope lifetimeScope, Type type, Type requestingType)
+        public object ResolveKeyed(Type type, object key)
+        {
+            return Resolve(this, type, requestingType: type, key: key);
+        }
+
+        internal virtual object Resolve(LifetimeScope lifetimeScope, Type type, Type requestingType, object key = null)
         {
             if (this.disposed)
             {
@@ -84,7 +89,7 @@
 
             if (!this.Container.TypeContainer.ContainsKey(type))
             {
-                return this.Container.ResolveInternal(type, lifetimeScope);
+                return this.Container.ResolveInternal(type, lifetimeScope, requestingType: requestingType, key: key);
             }
 
             var ctx = this.Container.TypeContainer[type];
@@ -93,7 +98,10 @@
             var scope = this.Container.WrapScope(lifetimeScope, ctx, ctx.Scopes[outputType]);
 
             object instance;
-            scope.GetInstance(this, () => this.Container.ResolveInternal(type, lifetimeScope), outputType, out instance);
+            scope.GetInstance(this,
+                              () =>
+                              this.Container.ResolveInternal(type, lifetimeScope, requestingType: requestingType,
+                                                             key: key), outputType, out instance);
             return instance;
         }
 
