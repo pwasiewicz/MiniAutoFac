@@ -625,8 +625,8 @@ namespace MiniAutoFac.UnitTest
             const string someKey = "someKey";
 
             var bld = new ContainerBuilder();
-            bld.Register<ClassB>().As<IFoo>().Keyed(someKey);
-            bld.Register<ClassA>().As<IFoo>().Keyed(someKey);
+            bld.Register<ClassB>().As<IFoo>().Keyed(someKey).PerLifetimeScope();
+            bld.Register<ClassA>().As<IFoo>().Keyed(someKey).PerLifetimeScope();
 
             bld.Register<FooClass>().As<IFoo>();
 
@@ -637,6 +637,7 @@ namespace MiniAutoFac.UnitTest
 
             Assert.IsInstanceOfType(inst, typeof(FooClass));
             Assert.AreEqual(2, coll.Count);
+            Assert.IsInstanceOfType(coll[0], typeof(ClassB));
         }
 
         [TestMethod]

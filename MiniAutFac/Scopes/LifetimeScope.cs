@@ -2,6 +2,7 @@
 {
     using System.Linq.Expressions;
     using System.Reflection;
+    using Extensions;
     using Interfaces;
     using Exceptions;
     using System;
@@ -94,7 +95,7 @@
             }
 
             var ctx = this.Container.TypeContainer[type];
-            var outputType = ctx.First();
+            var outputType = ctx.GetForKey(key).First();
 
             var scope = this.Container.WrapScope(lifetimeScope, ctx, ctx.Scopes[outputType]);
 
