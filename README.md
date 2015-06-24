@@ -18,6 +18,9 @@ Features
 
 Releases
 -----------
+### 1.3.6
+* Invlaid version on nuget, fix.
+
 ### 1.3.5
 * Fixed small bug when resolving keyed services with IEnumerable.
 
