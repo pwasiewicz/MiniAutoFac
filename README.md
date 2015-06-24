@@ -18,6 +18,9 @@ Features
 
 Releases
 -----------
+### 1.3.4
+* Validating type of instance factory result at resolve time (not while registering) when object is used as a return type
+
 ### 1.3.3
 * Resolving services by a key
 
