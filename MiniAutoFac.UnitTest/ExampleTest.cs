@@ -638,5 +638,29 @@ namespace MiniAutoFac.UnitTest
             Assert.IsInstanceOfType(inst, typeof(FooClass));
             Assert.AreEqual(2, coll.Count);
         }
+
+        [TestMethod]
+        public void RegisterAndResolve_ValidFactory_GeneralObjectFacotory()
+        {
+            var target = new ClassA();
+            var bld = new ContainerBuilder();
+            bld.Register(ctx => (object)target).As<IFoo>();
+            var cnt = bld.Build();
+
+            var inst = cnt.Resolve<IFoo>();
+
+            Assert.AreSame(target, inst);
+        }
+
+        [TestMethod, ExpectedException(typeof(CannotResolveTypeException))]
+        public void RegisterAndResolve_InvalidFactory_ThrowsExcp()
+        {
+            var target = new ClassA();
+            var bld = new ContainerBuilder();
+            bld.Register(ctx => (object)target).As<IDisposable>();
+            var cnt = bld.Build();
+
+            cnt.Resolve<IDisposable>();
+        }
     }
 }

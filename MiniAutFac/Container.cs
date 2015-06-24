@@ -115,12 +115,17 @@ namespace MiniAutFac
             }
 
             var outputType = types.First();
-            if (!desiredType.IsAssignableFrom(outputType))
+
+            if (!(outputType == typeof(object)
+                && registeredInstancesPair.Value.OwnFactories.ContainsKey(outputType)))
             {
-                throw new CannotResolveTypeException();
+                if (!desiredType.IsAssignableFrom(outputType))
+                {
+                    throw new CannotResolveTypeException();
+                }
             }
 
-            return this.CreateInstanceRecursive(lifetimeScope, registeredInstancesPair.Value, outputType,
+            return this.CreateInstanceRecursive(lifetimeScope, registeredInstancesPair.Value, outputType, desiredType,
                                                 requestingType);
         }
 
@@ -133,17 +138,25 @@ namespace MiniAutFac
         /// <param name="requestingType">Type of the requesting.</param>
         /// <returns></returns>
         /// <exception cref="NotAssignableException"></exception>
-        internal object CreateInstanceRecursive(LifetimeScope scope, RegisteredTypeContext ctx, Type target, Type requestingType = null)
+        internal object CreateInstanceRecursive(LifetimeScope scope, RegisteredTypeContext ctx, Type target, Type resolvedType, Type requestingType = null)
         {
             if (ctx.OwnFactories.ContainsKey(target))
             {
-                return ctx.OwnFactories[target](new ActivationContext
-                {
-                    ActivatedType = target,
-                    CurrentLifetimeScope = scope,
-                    RequestingType = requestingType
-                });
+                var inst =
+                    ctx.OwnFactories[target](new ActivationContext
+                                                {
+                                                    ActivatedType = target,
+                                                    CurrentLifetimeScope = scope,
+                                                    RequestingType = requestingType
+                                                });
+
+                if (inst == null) throw new CannotResolveTypeException();
+                if (!resolvedType.IsAssignableFrom(inst.GetType())) throw new CannotResolveTypeException();
+
+                return inst;
             }
+
+            if (target == typeof(object)) throw new InvalidOperationException("Object type must have instance factory specified.");
 
             LinkedList<object> constructorArguments = null;
 

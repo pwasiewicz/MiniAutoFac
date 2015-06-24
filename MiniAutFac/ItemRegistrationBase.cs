@@ -85,6 +85,6 @@ namespace MiniAutFac
         /// Determines the output type of registered type with builder.
         /// </summary>
         /// <param name="type">The type.</param>
-        public abstract void As(Type type);
+        public abstract ItemRegistrationBase As(Type type);
     }
 }

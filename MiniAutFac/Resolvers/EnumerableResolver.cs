@@ -67,7 +67,7 @@
 
                                                      var ctx = lifetimeScope.Container.TypeContainer[hiddenType];
                                                      return lifetimeScope.Container.CreateInstanceRecursive(lifetimeScope, ctx,
-                                                                                                            outputType);
+                                                                                                            outputType, target);
                                                  }, outputType, out instance);
                 outputList.Add(instance);
             }
