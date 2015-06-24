@@ -18,6 +18,9 @@ Features
 
 Releases
 -----------
+### 1.3.3
+* Resolving services by a key
+
 ### 1.3.2
 * Resolving Lazy - instances are resolved only when Value is called.
 
