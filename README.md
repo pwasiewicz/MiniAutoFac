@@ -18,6 +18,9 @@ Features
 
 Releases
 -----------
+### 1.3.5
+* Fixed small bug when resolving keyed services with IEnumerable.
+
 ### 1.3.4
 * Validating type of instance factory result at resolve time (not while registering) when object is used as a return type
 
