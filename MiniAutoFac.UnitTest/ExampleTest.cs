@@ -663,5 +663,18 @@ namespace MiniAutoFac.UnitTest
 
             cnt.Resolve<IDisposable>();
         }
+
+        [TestMethod]
+        public void Generic_Resolve_ReturnsProper()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register(typeof(GenericClass<>)).As(typeof(IGenericClass<>));
+            var cnt = bld.Build();
+
+            var inst = cnt.Resolve<IGenericClass<string>>();
+
+
+            Assert.AreEqual(inst.GetType(), typeof(GenericClass<string>));
+        }
     }
 }

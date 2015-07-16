@@ -56,9 +56,22 @@ namespace MiniAutFac.Resolvable
         /// </summary>
         public override ItemRegistrationBase As(Type type)
         {
-            if (this.GetTypesWithoutFactory().Any(inType => !type.IsAssignableFrom(inType)))
+            var typesToValidate = this.GetTypesWithoutFactory().ToList();
+            if (typesToValidate.Any(inType => !type.IsAssignableFrom(inType)))
             {
-                throw new NotAssignableException();
+                if ((type.IsGenericType && type.IsGenericTypeDefinition) &&
+                    typesToValidate.Any(
+                                        inType =>
+                                        inType.IsGenericType && inType.IsGenericTypeDefinition &&
+                                        (inType.GetInterfaces()
+                                               .Where(i => i.IsGenericType)
+                                               .Select(i => i.GetGenericTypeDefinition())
+                                               .Contains(type) ||
+                                         (inType.BaseType != null && inType.IsGenericType && inType.BaseType == type)))) { }
+                else
+                {
+                    throw new NotAssignableException();
+                }
             }
 
             if (Types.IsRegistrationForbiddenType(type))

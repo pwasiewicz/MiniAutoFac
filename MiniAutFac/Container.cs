@@ -94,17 +94,27 @@ namespace MiniAutFac
             var registeredInstancesPair = this.TypeContainer.FirstOrDefault(pair => pair.Key == desiredType);
             if (IsPairValuesNull(registeredInstancesPair))
             {
-                if (!this.ResolveImplicit)
+                if (type.IsGenericType)
                 {
-                    throw new CannotResolveTypeException();
+                    var gn = type.GetGenericTypeDefinition();
+                    registeredInstancesPair = this.TypeContainer.FirstOrDefault(pair => pair.Key == gn);
+
                 }
 
-                registeredInstancesPair =
-                    this.TypeContainer.FirstOrDefault(
-                        pair => pair.Value.Any(desiredType.IsAssignableFrom));
                 if (IsPairValuesNull(registeredInstancesPair))
                 {
-                    throw new CannotResolveTypeException();
+                    if (!this.ResolveImplicit)
+                    {
+                        throw new CannotResolveTypeException();
+                    }
+
+                    registeredInstancesPair =
+                        this.TypeContainer.FirstOrDefault(
+                                                          pair => pair.Value.Any(desiredType.IsAssignableFrom));
+                    if (IsPairValuesNull(registeredInstancesPair))
+                    {
+                        throw new CannotResolveTypeException();
+                    }
                 }
             }
 
@@ -115,6 +125,10 @@ namespace MiniAutFac
             }
 
             var outputType = types.First();
+            if (outputType.IsGenericType && desiredType.IsGenericType)
+            {
+                outputType = outputType.MakeGenericType(desiredType.GetGenericArguments());
+            }
 
             if (!(outputType == typeof(object)
                 && registeredInstancesPair.Value.OwnFactories.ContainsKey(outputType)))
