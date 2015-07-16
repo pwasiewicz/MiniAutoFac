@@ -18,6 +18,9 @@ Features
 
 Releases
 -----------
+### 1.3.7
+* Oepn generic support
+
 ### 1.3.6
 * Invlaid version on nuget, fix.
 
@@ -215,4 +218,11 @@ var bld = new ContainerBuilder();
 var bInst = new ClassB();
 bld.Register(context => bInst).As<InterfaceForClassB>();
 ```
-            
+### Registering open generic
+```c#
+var bld = new ContainerBuilder();
+bld.Register(typeof(GenericClass<>)).As(typeof(IGenericClass<>));
+var cnt = bld.Build();
+
+var inst = cnt.Resolve<IGenericClass<string>>();
+```
