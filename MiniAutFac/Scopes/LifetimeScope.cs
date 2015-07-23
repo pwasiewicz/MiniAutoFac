@@ -8,6 +8,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Parameters;
 
     public class LifetimeScope : ILifetimeScope
     {
@@ -72,9 +73,14 @@
             }
         }
 
+        public object Resolve(Type type, params Parameter[] parameters)
+        {
+            return Resolve(this, type, requestingType: null, key: null, additionalParameters: parameters);
+        }
+
         public virtual object Resolve(Type type)
         {
-            return Resolve(this, type, requestingType: null, key: null);
+            return Resolve(type, new Parameter[0]);
         }
 
         public object ResolveKeyed(Type type, object key)
@@ -82,7 +88,7 @@
             return Resolve(this, type, requestingType: type, key: key);
         }
 
-        internal virtual object Resolve(LifetimeScope lifetimeScope, Type type, Type requestingType, object key = null)
+        internal virtual object Resolve(LifetimeScope lifetimeScope, Type type, Type requestingType, object key = null, params Parameter[] additionalParameters)
         {
             if (this.disposed)
             {
@@ -91,7 +97,7 @@
 
             if (!this.Container.TypeContainer.ContainsKey(type))
             {
-                return this.Container.ResolveInternal(type, lifetimeScope, requestingType: requestingType, key: key);
+                return this.Container.ResolveInternal(type, lifetimeScope, requestingType: requestingType, key: key, additionalParameters: additionalParameters);
             }
 
             var ctx = this.Container.TypeContainer[type];
@@ -103,7 +109,8 @@
             scope.GetInstance(this,
                               () =>
                               this.Container.ResolveInternal(type, lifetimeScope, requestingType: requestingType,
-                                                             key: key), outputType, out instance);
+                                                             key: key, additionalParameters: additionalParameters),
+                              outputType, out instance);
             return instance;
         }
 

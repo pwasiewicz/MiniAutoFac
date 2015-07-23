@@ -17,6 +17,7 @@ namespace MiniAutoFac.UnitTest
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using MiniAutFac.Parameters.Concrete;
     using TestClasses;
     using TestClasses.EnumerableBug;
 
@@ -675,6 +676,19 @@ namespace MiniAutoFac.UnitTest
 
 
             Assert.AreEqual(inst.GetType(), typeof(GenericClass<string>));
+        }
+
+        [TestMethod]
+        public void CustomParameters_Resolve_Properly()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<Class2>().As<Class2>();
+            var cnt = bld.Build();
+
+            var cl1 = new Class1(null);
+            var cl2 = cnt.Resolve<Class2>(new NamedParameter("class1", cl1));
+
+            Assert.AreSame(cl1, cl2.Class1);
         }
     }
 }

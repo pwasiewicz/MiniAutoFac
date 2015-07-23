@@ -14,6 +14,7 @@ namespace MiniAutFac
     using MiniAutFac.Exceptions;
     using MiniAutFac.Interfaces;
     using MiniAutFac.Resolvers;
+    using Parameters;
     using Scopes;
     using System;
     using System.Collections.Generic;
@@ -68,13 +69,14 @@ namespace MiniAutFac
         /// <param name="type">The type to resolve.</param>
         /// <param name="lifetimeScope">The liftime scope.</param>
         /// <param name="requestingType">Type of the requesting.</param>
+        /// <param name="additionalParameters">Additional parameters to use for resolving</param>
         /// <returns>
         /// New instance of type T.
         /// </returns>
         /// <exception cref="TypeRepositoryEmptyException"></exception>
         /// <exception cref="CannotResolveTypeException">
         /// </exception>
-        public object ResolveInternal(Type type, LifetimeScope lifetimeScope, Type requestingType = null, object key = null)
+        public object ResolveInternal(Type type, LifetimeScope lifetimeScope, Type requestingType = null, object key = null, params Parameter[] additionalParameters)
         {
             if (this.TypeContainer == null)
             {
@@ -140,7 +142,7 @@ namespace MiniAutFac
             }
 
             return this.CreateInstanceRecursive(lifetimeScope, registeredInstancesPair.Value, outputType, desiredType,
-                                                requestingType);
+                                                requestingType, additionalParameters);
         }
 
         /// <summary>
@@ -150,9 +152,10 @@ namespace MiniAutFac
         /// <param name="ctx">The CTX.</param>
         /// <param name="target">The target.</param>
         /// <param name="requestingType">Type of the requesting.</param>
+        /// <param name="additionalParameters">Additional parameters to use for resolving</param>
         /// <returns></returns>
         /// <exception cref="NotAssignableException"></exception>
-        internal object CreateInstanceRecursive(LifetimeScope scope, RegisteredTypeContext ctx, Type target, Type resolvedType, Type requestingType = null)
+        internal object CreateInstanceRecursive(LifetimeScope scope, RegisteredTypeContext ctx, Type target, Type resolvedType, Type requestingType = null, params Parameter[] additionalParameters)
         {
             if (ctx.OwnFactories.ContainsKey(target))
             {
@@ -181,7 +184,7 @@ namespace MiniAutFac
                 foreach (var constructorInfo in constructors)
                 {
                     var parametersInsance = new LinkedList<object>();
-                    if (!this.ResolveConstructorParameters(scope, ctx, constructorInfo, parametersInsance))
+                    if (!this.ResolveConstructorParameters(scope, ctx, constructorInfo, parametersInsance, additionalParameters))
                     {
                         continue;
                     }
@@ -262,6 +265,7 @@ namespace MiniAutFac
         /// <param name="ctx">The CTX.</param>
         /// <param name="constructorInfo">The constructor ctx.</param>
         /// <param name="arguments">The arguments.</param>
+        /// <param name="additionalParameters"></param>
         /// <returns>
         /// True, if resolving constructor parameters succeed.
         /// </returns>
@@ -270,7 +274,7 @@ namespace MiniAutFac
         /// or
         /// arguments
         /// </exception>
-        private bool ResolveConstructorParameters(LifetimeScope lifetimeScope, RegisteredTypeContext ctx, MethodBase constructorInfo, ICollection<object> arguments)
+        private bool ResolveConstructorParameters(LifetimeScope lifetimeScope, RegisteredTypeContext ctx, MethodBase constructorInfo, ICollection<object> arguments, Parameter[] additionalParameters)
         {
             if (constructorInfo == null)
             {
@@ -282,11 +286,16 @@ namespace MiniAutFac
                 throw new ArgumentNullException("arguments");
             }
 
+            if (additionalParameters == null) additionalParameters = new Parameter[0];
+
             arguments.Clear();
             var outputType = constructorInfo.DeclaringType;
 
             var parameters = constructorInfo.GetParameters().OrderBy(x => x.Position);
-            var declaredParameters = ctx.Parameters.ContainsKey(outputType) ? ctx.Parameters[outputType] : null;
+            var declaredParameters =
+                additionalParameters.Concat(ctx.Parameters.ContainsKey(outputType)
+                                                ? ctx.Parameters[outputType]
+                                                : Enumerable.Empty<Parameter>());
 
             try
             {
@@ -294,15 +303,12 @@ namespace MiniAutFac
                 {
                     var paramterResolved = false;
 
-                    if (declaredParameters != null)
-                    {
-                        foreach (var parameterCtx in
+                    foreach (var parameterCtx in
                                          declaredParameters.Where(parameterCtx => parameterCtx.IsApplicable(parameterInfo)))
-                        {
-                            arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
-                            paramterResolved = true;
-                            break;
-                        }
+                    {
+                        arguments.Add(parameterCtx.GetValue(constructorInfo.DeclaringType));
+                        paramterResolved = true;
+                        break;
                     }
 
                     if (paramterResolved)

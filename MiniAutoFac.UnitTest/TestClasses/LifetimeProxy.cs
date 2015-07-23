@@ -2,9 +2,15 @@
 {
     using System;
     using MiniAutFac.Interfaces;
+    using MiniAutFac.Parameters;
 
     public class LifetimeProxy : ILifetimeScope
     {
+        public object Resolve(Type type, params Parameter[] parameters)
+        {
+            return null;
+        }
+
         public object Resolve(Type type)
         {
             return null;
