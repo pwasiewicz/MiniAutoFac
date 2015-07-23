@@ -18,6 +18,9 @@ Features
 
 Releases
 -----------
+### 1.3.8
+* Additional parameters when resolving
+
 ### 1.3.7
 * Oepn generic support
 
@@ -225,4 +228,13 @@ bld.Register(typeof(GenericClass<>)).As(typeof(IGenericClass<>));
 var cnt = bld.Build();
 
 var inst = cnt.Resolve<IGenericClass<string>>();
+```
+
+## Resolving additional parameters:
+```c#
+var bld = new ContainerBuilder();
+bld.Register(typeof(SomeClass)).As(typeof(SomeClass));
+var cnt = bld.Build();
+
+var inst = cnt.Resolve<SomeClass>(new NamedParameter("SomeParam", someInstanceOfParameter));
 ```
