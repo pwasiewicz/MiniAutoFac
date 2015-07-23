@@ -230,7 +230,7 @@ var cnt = bld.Build();
 var inst = cnt.Resolve<IGenericClass<string>>();
 ```
 
-## Resolving additional parameters:
+## Resolving additional parameters
 ```c#
 var bld = new ContainerBuilder();
 bld.Register(typeof(SomeClass)).As(typeof(SomeClass));
