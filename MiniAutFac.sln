@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniAutFac", "MiniAutFac\Mi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniAutFac.UnitTest", "MiniAutoFac.UnitTest\MiniAutFac.UnitTest.csproj", "{E9DE80D1-F4B7-488F-827E-6AB5FEEC1F54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniAutFac.ScopePerRequest", "MiniAutFac.ScopePerRequest\MiniAutFac.ScopePerRequest.csproj", "{5714F0BB-7C8D-4974-8008-F103B8C854E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{E9DE80D1-F4B7-488F-827E-6AB5FEEC1F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9DE80D1-F4B7-488F-827E-6AB5FEEC1F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9DE80D1-F4B7-488F-827E-6AB5FEEC1F54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5714F0BB-7C8D-4974-8008-F103B8C854E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5714F0BB-7C8D-4974-8008-F103B8C854E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5714F0BB-7C8D-4974-8008-F103B8C854E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5714F0BB-7C8D-4974-8008-F103B8C854E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
