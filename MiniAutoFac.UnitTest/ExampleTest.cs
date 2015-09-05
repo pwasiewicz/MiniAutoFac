@@ -17,6 +17,7 @@ namespace MiniAutoFac.UnitTest
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using MiniAutFac.Parameters.Concrete;
     using TestClasses;
     using TestClasses.EnumerableBug;
 
@@ -625,8 +626,8 @@ namespace MiniAutoFac.UnitTest
             const string someKey = "someKey";
 
             var bld = new ContainerBuilder();
-            bld.Register<ClassB>().As<IFoo>().Keyed(someKey);
-            bld.Register<ClassA>().As<IFoo>().Keyed(someKey);
+            bld.Register<ClassB>().As<IFoo>().Keyed(someKey).PerLifetimeScope();
+            bld.Register<ClassA>().As<IFoo>().Keyed(someKey).PerLifetimeScope();
 
             bld.Register<FooClass>().As<IFoo>();
 
@@ -637,6 +638,57 @@ namespace MiniAutoFac.UnitTest
 
             Assert.IsInstanceOfType(inst, typeof(FooClass));
             Assert.AreEqual(2, coll.Count);
+            Assert.IsInstanceOfType(coll[0], typeof(ClassB));
+        }
+
+        [TestMethod]
+        public void RegisterAndResolve_ValidFactory_GeneralObjectFacotory()
+        {
+            var target = new ClassA();
+            var bld = new ContainerBuilder();
+            bld.Register(ctx => (object)target).As<IFoo>();
+            var cnt = bld.Build();
+
+            var inst = cnt.Resolve<IFoo>();
+
+            Assert.AreSame(target, inst);
+        }
+
+        [TestMethod, ExpectedException(typeof(CannotResolveTypeException))]
+        public void RegisterAndResolve_InvalidFactory_ThrowsExcp()
+        {
+            var target = new ClassA();
+            var bld = new ContainerBuilder();
+            bld.Register(ctx => (object)target).As<IDisposable>();
+            var cnt = bld.Build();
+
+            cnt.Resolve<IDisposable>();
+        }
+
+        [TestMethod]
+        public void Generic_Resolve_ReturnsProper()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register(typeof(GenericClass<>)).As(typeof(IGenericClass<>));
+            var cnt = bld.Build();
+
+            var inst = cnt.Resolve<IGenericClass<string>>();
+
+
+            Assert.AreEqual(inst.GetType(), typeof(GenericClass<string>));
+        }
+
+        [TestMethod]
+        public void CustomParameters_Resolve_Properly()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register<Class2>().As<Class2>();
+            var cnt = bld.Build();
+
+            var cl1 = new Class1(null);
+            var cl2 = cnt.Resolve<Class2>(new NamedParameter("class1", cl1));
+
+            Assert.AreSame(cl1, cl2.Class1);
         }
     }
 }

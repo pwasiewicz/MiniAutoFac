@@ -54,11 +54,24 @@ namespace MiniAutFac.Resolvable
         /// <summary>
         /// Determines the output type of registered type with builder.
         /// </summary>
-        public override void As(Type type)
+        public override ItemRegistrationBase As(Type type)
         {
-            if (this.InTypes.Any(inType => !type.IsAssignableFrom(inType)))
+            var typesToValidate = this.GetTypesWithoutFactory().ToList();
+            if (typesToValidate.Any(inType => !type.IsAssignableFrom(inType)))
             {
-                throw new NotAssignableException();
+                if ((type.IsGenericType && type.IsGenericTypeDefinition) &&
+                    typesToValidate.Any(
+                                        inType =>
+                                        inType.IsGenericType && inType.IsGenericTypeDefinition &&
+                                        (inType.GetInterfaces()
+                                               .Where(i => i.IsGenericType)
+                                               .Select(i => i.GetGenericTypeDefinition())
+                                               .Contains(type) ||
+                                         (inType.BaseType != null && inType.IsGenericType && inType.BaseType == type)))) { }
+                else
+                {
+                    throw new NotAssignableException();
+                }
             }
 
             if (Types.IsRegistrationForbiddenType(type))
@@ -67,6 +80,13 @@ namespace MiniAutFac.Resolvable
             }
 
             this.AsType = type;
+
+            return this;
+        }
+
+        private IEnumerable<Type> GetTypesWithoutFactory()
+        {
+            return this.InTypes.Where(t => typeof(object) != t && this.OwnFactory == null);
         }
     }
 }

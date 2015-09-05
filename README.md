@@ -18,6 +18,24 @@ Features
 
 Releases
 -----------
+### 1.3.8
+* Additional parameters when resolving
+
+### 1.3.7
+* Oepn generic support
+
+### 1.3.6
+* Invlaid version on nuget, fix.
+
+### 1.3.5
+* Fixed small bug when resolving keyed services with IEnumerable.
+
+### 1.3.4
+* Validating type of instance factory result at resolve time (not while registering) when object is used as a return type
+
+### 1.3.3
+* Resolving services by a key
+
 ### 1.3.2
 * Resolving Lazy - instances are resolved only when Value is called.
 
@@ -203,4 +221,20 @@ var bld = new ContainerBuilder();
 var bInst = new ClassB();
 bld.Register(context => bInst).As<InterfaceForClassB>();
 ```
-            
+### Registering open generic
+```c#
+var bld = new ContainerBuilder();
+bld.Register(typeof(GenericClass<>)).As(typeof(IGenericClass<>));
+var cnt = bld.Build();
+
+var inst = cnt.Resolve<IGenericClass<string>>();
+```
+
+## Resolving additional parameters
+```c#
+var bld = new ContainerBuilder();
+bld.Register(typeof(SomeClass)).As(typeof(SomeClass));
+var cnt = bld.Build();
+
+var inst = cnt.Resolve<SomeClass>(new NamedParameter("SomeParam", someInstanceOfParameter));
+```

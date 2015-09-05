@@ -64,6 +64,7 @@
     <Compile Include="TestClasses\DisposableClass.cs" />
     <Compile Include="TestClasses\EnumerableBug\SomeContext.cs" />
     <Compile Include="TestClasses\EmbeddingModule.cs" />
+    <Compile Include="TestClasses\GenericClass.cs" />
     <Compile Include="TestClasses\InjectLifetimeScopeClass.cs" />
     <Compile Include="TestClasses\LifetimeProxy.cs" />
     <Compile Include="TestClasses\ModuleWithRegisteredInstanceListener.cs" />
