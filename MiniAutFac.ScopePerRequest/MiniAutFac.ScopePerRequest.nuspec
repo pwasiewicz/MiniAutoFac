@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/pwasiewicz/miniautofac/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/pwasiewicz/miniautofac</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Main release.</releaseNotes>
+    <copyright>Copyright 2015 pwasiewicz</copyright>
+    <tags>MiniAutFac scope per request</tags>
+  </metadata>
+</package>

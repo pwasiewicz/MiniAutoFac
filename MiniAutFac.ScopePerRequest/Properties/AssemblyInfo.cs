@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MiniAutFac.ScopePerRequest")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Per reqest scope for MiniAutFac")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("pwasiewicz")]
 [assembly: AssemblyProduct("MiniAutFac.ScopePerRequest")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright © pwasiewicz  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
