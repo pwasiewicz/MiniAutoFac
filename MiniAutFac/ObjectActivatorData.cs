@@ -42,5 +42,15 @@ namespace MiniAutFac
             get { return this.constructorArguments; }
             set { this.constructorArguments = new ReadOnlyCollection<object>(value as List<object> ?? value.ToList()); }
         }
+
+        public static ObjectActivatorData ForDefaultConstructor(Type t)
+        {
+            return new ObjectActivatorData
+            {
+                ResolvedType = t,
+                ConstructorInfo = t.GetConstructor(new Type[0]),
+                ConstructorArguments = new object[0]
+            };
+        }
     }
 }

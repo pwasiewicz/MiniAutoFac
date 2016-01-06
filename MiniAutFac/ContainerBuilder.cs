@@ -79,6 +79,19 @@ namespace MiniAutFac
         }
 
         /// <summary>
+        /// Registers the speicifed module with default constructor.
+        /// </summary>
+        /// <typeparam name="TModule">Module type.</typeparam>
+        /// <exception cref="System.ArgumentNullException">module</exception>
+        public void RegisterModule<TModule>()
+            where TModule : Module, new()
+        {
+            var module = (Module) this.ActivatorEngine(ObjectActivatorData.ForDefaultConstructor(typeof (TModule)));
+
+            this.modules.Add(module);
+        }
+
+        /// <summary>
         /// Registers the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
