@@ -2,6 +2,8 @@ miniautofac
 ===========
 ![Logo](https://raw.githubusercontent.com/pwasiewicz/miniautofac/master/MiniAutFacLogo.png)
 
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/pwasiewicz/miniautofac/master/LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/r47m8b7x2e0a6yhn?svg=true)](https://ci.appveyor.com/project/pwasiewicz/miniautofac)
 
 Simple IoC container for Microsoft .NET
 
