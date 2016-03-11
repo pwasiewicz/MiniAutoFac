@@ -1,5 +1,7 @@
 miniautofac
 ===========
+![Logo](https://raw.githubusercontent.com/pwasiewicz/miniautofac/master/MiniAutFacLogo.png)
+
 
 Simple IoC container for Microsoft .NET
 
