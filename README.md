@@ -242,3 +242,14 @@ var cnt = bld.Build();
 
 var inst = cnt.Resolve<SomeClass>(new NamedParameter("SomeParam", someInstanceOfParameter));
 ```
+
+### Lazy support
+```c#
+var builder = new ContainerBuilder();
+builder.Register<Bar>();
+
+var cnt = builder.Build();
+var result = cnt.Resolve<Lazy<Bar>>(); 
+
+result.Value // that causes resolution in fact
+```
