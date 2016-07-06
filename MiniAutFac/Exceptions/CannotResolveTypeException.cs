@@ -16,12 +16,14 @@ namespace MiniAutFac.Exceptions
     /// </summary>
     public class CannotResolveTypeException : Exception
     {
+        public Type TypeToResolve { get;  }
         /// <summary>
         /// Initializes a new instance of the <see cref="CannotResolveTypeException" /> class.
         /// </summary>
-        public CannotResolveTypeException()
-            : base("Cannot resolve desired type!")
+        public CannotResolveTypeException(Type type)
+            : base($"Cannot resolve desired type \"{ type.FullName }\"!")
         {
+            this.TypeToResolve = type;
         }
     }
 }

@@ -107,7 +107,7 @@ namespace MiniAutFac
                 {
                     if (!this.ResolveImplicit)
                     {
-                        throw new CannotResolveTypeException();
+                        throw new CannotResolveTypeException(type);
                     }
 
                     registeredInstancesPair =
@@ -115,7 +115,7 @@ namespace MiniAutFac
                                                           pair => pair.Value.Any(desiredType.IsAssignableFrom));
                     if (IsPairValuesNull(registeredInstancesPair))
                     {
-                        throw new CannotResolveTypeException();
+                        throw new CannotResolveTypeException(type);
                     }
                 }
             }
@@ -123,7 +123,7 @@ namespace MiniAutFac
             var types = registeredInstancesPair.Value.GetForKey(key).ToList();
             if (types.Skip(1).Any())
             {
-                throw new CannotResolveTypeException();
+                throw new CannotResolveTypeException(type);
             }
 
             var outputType = types.First();
@@ -137,7 +137,7 @@ namespace MiniAutFac
             {
                 if (!desiredType.IsAssignableFrom(outputType))
                 {
-                    throw new CannotResolveTypeException();
+                    throw new CannotResolveTypeException(type);
                 }
             }
 
@@ -167,8 +167,8 @@ namespace MiniAutFac
                                                     RequestingType = requestingType
                                                 });
 
-                if (inst == null) throw new CannotResolveTypeException();
-                if (!resolvedType.IsAssignableFrom(inst.GetType())) throw new CannotResolveTypeException();
+                if (inst == null) throw new CannotResolveTypeException(target);
+                if (!resolvedType.IsAssignableFrom(inst.GetType())) throw new CannotResolveTypeException(target);
 
                 return inst;
             }

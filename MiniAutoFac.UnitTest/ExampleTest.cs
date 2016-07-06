@@ -450,7 +450,7 @@ namespace MiniAutoFac.UnitTest
         }
 
         [TestMethod]
-        public void RegisteringEmbeddedhModulse()
+        public void RegisteringEmbeddedModules()
         {
             var bld = new ContainerBuilder();
             bld.RegisterModule(new EmbeddingModule());
@@ -689,6 +689,17 @@ namespace MiniAutoFac.UnitTest
             var cl2 = cnt.Resolve<Class2>(new NamedParameter("class1", cl1));
 
             Assert.AreSame(cl1, cl2.Class1);
+        }
+
+        [TestMethod]
+        public void Registering_Types_FromAssembly_ResolvesProperType()
+        {
+            var bld = new ContainerBuilder();
+            bld.Register(t => typeof(IFoo).IsAssignableFrom(t), Assembly.GetExecutingAssembly());
+
+            var cl1 = bld.Build().Resolve<FooClass>();
+
+            Assert.IsTrue(cl1.GetType() == typeof(FooClass));
         }
     }
 }
