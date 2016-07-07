@@ -21,6 +21,10 @@ Features
 * AutoFac-like lifetime scopes
 
 Releases
+
+### 1.4.0
+* Proper instance registering when using predicate on assembly
+
 -----------
 ### 1.3.8
 * Additional parameters when resolving
