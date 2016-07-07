@@ -70,7 +70,7 @@ namespace MiniAutFac.Resolvable
                                          (inType.BaseType != null && inType.IsGenericType && inType.BaseType == type)))) { }
                 else
                 {
-                    throw new NotAssignableException();
+                    throw new NotAssignableException(type);
                 }
             }
 

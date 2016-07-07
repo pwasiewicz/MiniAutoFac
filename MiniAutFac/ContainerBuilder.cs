@@ -250,9 +250,15 @@ namespace MiniAutFac
                         .Where(resolvableItem => resolvableItem.AsType != null)
                         .GroupBy(resolvableItem => resolvableItem.AsType))
             {
-                if (builderResolvableItems.Any(item => item.InTypes.Any(t => t.IsInterface || t.IsAbstract)))
+                var notResolvable =
+                    builderResolvableItems.SelectMany(item => item.InTypes.Where(t => t.IsInterface || t.IsAbstract))
+                        .FirstOrDefault();
+
+                if (notResolvable != null)
                 {
-                    throw new NotAssignableException();
+                    throw new NotAssignableException(
+                        notResolvable,
+                        $"Type \"{notResolvable.FullName}\" is abstract or interface so cannot be created.");
                 }
 
                 var ctx =

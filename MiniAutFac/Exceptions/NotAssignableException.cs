@@ -16,12 +16,20 @@ namespace MiniAutFac.Exceptions
     /// </summary>
     public class NotAssignableException : Exception
     {
+        public Type OutputType { get; }
         /// <summary>
         /// Initializes a new instance of the <see cref="NotAssignableException" /> class.
         /// </summary>
-        public NotAssignableException()
+        public NotAssignableException(Type outputType)
             : base("Ouptut type is not assignable from source type!")
         {
+            this.OutputType = outputType;
+        }
+
+        public NotAssignableException(Type outputType, string message)
+            : base(message)
+        {
+            this.OutputType = outputType;
         }
     }
 }

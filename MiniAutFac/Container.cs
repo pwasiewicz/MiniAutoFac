@@ -197,7 +197,7 @@ namespace MiniAutFac
 
             if (constructorArguments == null || ctor == null)
             {
-                throw new NotAssignableException();
+                throw new NotAssignableException(target, $"There is no constructors in type \"{target.FullName}\"");
             }
 
             var instance =
