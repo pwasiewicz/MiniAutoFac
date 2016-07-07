@@ -21,16 +21,16 @@ Features
 * AutoFac-like lifetime scopes
 
 Releases
+-----------
 
 ### 1.4.0
 * Proper instance registering when using predicate on assembly
 
------------
 ### 1.3.8
 * Additional parameters when resolving
 
 ### 1.3.7
-* Oepn generic support
+* Open generic support
 
 ### 1.3.6
 * Invlaid version on nuget, fix.
