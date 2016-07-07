@@ -86,5 +86,14 @@ namespace MiniAutFac
         /// </summary>
         /// <param name="type">The type.</param>
         public abstract ItemRegistrationBase As(Type type);
+
+        internal virtual ItemRegistrationBase BasedOn(ItemRegistrationBase other)
+        {
+            this.Key = other.Key;
+            this.Module = other.Module;
+            this.Scope = other.Scope;
+
+            return this;
+        }
     }
 }

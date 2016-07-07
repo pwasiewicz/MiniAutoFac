@@ -234,6 +234,16 @@ namespace MiniAutFac
                 resolvable.ActivationEngine = this.ActivatorEngine;
             }
 
+            foreach (var nullType in
+                this.typeContainer.Where(resolvableItem => resolvableItem.AsType == null).ToList())
+            {
+                foreach (var inType in nullType.InTypes) this.typeContainer.Add((new ItemRegistration(nullType.Origin, inType)
+                                                                                     {
+                                                                                         Scope = nullType.Scope
+                                                                                     }).As(inType));
+                this.typeContainer.Remove(nullType);
+            }
+
             foreach (
                 var builderResolvableItems in
                     this.typeContainer
